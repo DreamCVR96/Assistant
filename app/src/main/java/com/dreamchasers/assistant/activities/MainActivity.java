@@ -583,7 +583,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         String sendTextString;
         sendTextString = sendText;
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
+//
         OkHttpClient client1 = new OkHttpClient();
 
         Request request1 = new Request.Builder()
