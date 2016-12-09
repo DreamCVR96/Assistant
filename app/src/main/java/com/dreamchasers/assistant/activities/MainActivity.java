@@ -199,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     /**
      * Receiving speech input, not in use right one.
      */
+
+    
     /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
