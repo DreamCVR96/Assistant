@@ -187,26 +187,6 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         }
     }
 
-    /**
-     * Receiving speech input, not in use right one.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && null != data) {
-
-                    ArrayList<String> result = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                   vTextView.setText(result.get(0));
-                }
-                break;
-            }
-
-        }
-    }
 
 
     @Override
