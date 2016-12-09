@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         ButterKnife.bind(this);
       //  speech = SpeechRecognizer.createSpeechRecognizer(this);
        // speech.setRecognitionListener(this);
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        speech.setRecognitionListener(this);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(null);
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
         viewPager.setPageMargin(pageMargin);
 
+
+        promptSpeechInput();
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs1);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -138,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         });
 
 
+
+
     } // onCreate finishes here@@@@2
 
 
@@ -163,12 +169,12 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     /**
      * Showing google speech input dialog
      */
-    private void promptSpeechInput() {
+    public void promptSpeechInput() {
 
-        if (speech == null ){
-            speech = SpeechRecognizer.createSpeechRecognizer(this);
-            speech.setRecognitionListener(this);
-        }
+   //     if (speech == null ){
+     //       speech = SpeechRecognizer.createSpeechRecognizer(this);
+       //     speech.setRecognitionListener(this);
+        //}
 
 
          recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -185,11 +191,15 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                     getString(R.string.speech_not_supported),
                     Toast.LENGTH_SHORT).show();
         }
+
+
+
     }
 
     /**
      * Receiving speech input, not in use right one.
      */
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -206,7 +216,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
             }
 
         }
-    }
+    } */
+
 
 
     @Override
@@ -214,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         Log.i(LOG_TAG, "onBeginningOfSpeech");
 
     }
-
     @Override
     public void onBufferReceived(byte[] buffer) {
         Log.i(LOG_TAG, "onBufferReceived: " + buffer);
@@ -274,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @Override
     public void onResults(Bundle results) {
         Log.i(LOG_TAG, "onResults");
+    //    speech.stopListening();
 
         sendVoiceInput();
         //speech.stopListening();
@@ -382,6 +393,10 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @Override
     protected void onResume() {
         super.onResume();
+
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        speech.setRecognitionListener(this);
+
         switch (tabPosition) {
             case 0:
                 floatingActionButton1.show();
@@ -438,9 +453,17 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
          //   speech.stopListening();
 
              speech.destroy();
-            Log.i(LOG_TAG, "destroy");
+            Log.i(LOG_TAG, "destroy212");
         }
     }
+
+
+
+
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
