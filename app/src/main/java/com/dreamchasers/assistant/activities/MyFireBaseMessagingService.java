@@ -15,6 +15,14 @@ import com.google.firebase.messaging.RemoteMessage;
  * Created by ka on 12/9/2016.
  */
 
+
+
+
+
+
+
+
+
 public class MyFireBaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -35,3 +43,5 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     }
 }
+
+
