@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "381101807670",
+    "firebase_url": "https://assistant-96fca.firebaseio.com",
+    "project_id": "assistant-96fca",
+    "storage_bucket": "assistant-96fca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381101807670:android:2df9b761e86729e2",
+        "android_client_info": {
+          "package_name": "com.dreamchasers.assistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "381101807670-7p1volo95srf6t59q1phvf5rfuuuknpm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMOYzM6llKRDSdr_4VL8ATPaiB7Mrytt0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -90,6 +90,21 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".activities.MyFireBaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".activities.MyFireBaseInstandeIdService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+c
+
     </application>
 
 </manifest>
