@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dreamchasers.assistant.activities.MainActivity;
 import com.dreamchasers.assistant.database.DatabaseHelper;
 import com.dreamchasers.assistant.models.Reminder;
 import com.dreamchasers.assistant.R;
@@ -29,13 +31,14 @@ import butterknife.ButterKnife;
 public class TabFragment extends Fragment {
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
+
     @BindView(R.id.empty_text) TextView emptyText;
     @BindView(R.id.empty_view) LinearLayout linearLayout;
     @BindView(R.id.empty_icon) ImageView imageView;
 
     private ReminderAdapter reminderAdapter;
     private List<Reminder> reminderList;
-    private int remindersType;
+    private int argsType;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,27 +50,47 @@ public class TabFragment extends Fragment {
         super.onViewCreated(view, bundle);
         ButterKnife.bind(this, view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+
         recyclerView.setLayoutManager(layoutManager);
 
-        remindersType = this.getArguments().getInt("TYPE");
-        if (remindersType == Reminder.INACTIVE) {
+
+
+        argsType = this.getArguments().getInt("TYPE");
+        if (argsType == Reminder.INACTIVE) {
             emptyText.setText(R.string.no_inactive);
             imageView.setImageResource(R.drawable.ic_notifications_off_black_empty);
+            Log.v("FRAGMENT GET ITEM", "FUCK");
+
+
         }
+
+
+        argsType = this.getArguments().getInt("TYPE");
+        if (argsType == Reminder.ACTIVE) {
+            emptyText.setText(R.string.no_active);
+            imageView.setImageResource(R.drawable.ic_notifications_black_empty);
+            Log.v("FRAGMENT GET ITEM", "wasssssuuup");
+
+
+        }
+
+
 
         reminderList = getListData();
         reminderAdapter = new ReminderAdapter(getContext(), reminderList);
         recyclerView.setAdapter(reminderAdapter);
 
+
         if (reminderAdapter.getItemCount() == 0) {
             recyclerView.setVisibility(View.GONE);
+
             linearLayout.setVisibility(View.VISIBLE);
         }
     }
 
     public List<Reminder> getListData() {
         DatabaseHelper database = DatabaseHelper.getInstance(getContext().getApplicationContext());
-        List<Reminder> reminderList = database.getNotificationList(remindersType);
+        List<Reminder> reminderList = database.getNotificationList(argsType);
         database.close();
         return reminderList;
     }
@@ -76,14 +99,17 @@ public class TabFragment extends Fragment {
         reminderList.clear();
         reminderList.addAll(getListData());
         reminderAdapter.notifyDataSetChanged();
+        Log.v("RemindertypeNum", "" + argsType);
 
-        if (reminderAdapter.getItemCount() == 0) {
+        if (reminderAdapter.getItemCount() == 0 ) {
             recyclerView.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
         } else {
             recyclerView.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
         }
+
+
     }
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {

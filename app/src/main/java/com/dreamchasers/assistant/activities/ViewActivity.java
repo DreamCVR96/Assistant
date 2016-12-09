@@ -44,6 +44,8 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.R.id.input;
+
 public class ViewActivity extends AppCompatActivity {
 
     @BindView(R.id.notification_title) TextView notificationTitleText;
@@ -229,7 +231,10 @@ public class ViewActivity extends AppCompatActivity {
     public void actionShareText() {
         Intent intent = new Intent(); intent.setAction(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, reminder.getTitle() + "\n" + reminder.getContent());
+        intent.putExtra(Intent.EXTRA_TEXT, reminder.getTitle() + "\n" + reminder.getContent()
+                + "\n" + reminder.getDate()
+                );
+
         startActivity(Intent.createChooser(intent, getString(R.string.action_share)));
     }
 

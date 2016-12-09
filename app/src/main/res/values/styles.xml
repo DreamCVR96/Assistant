@@ -54,7 +54,7 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="actionOverflowButtonStyle">@style/OverFlow</item>
-        <item name="actionModeStyle">@style/ToolbarActionMode</item>
+
     </style>
     <style name="OverFlow" parent="@style/Widget.AppCompat.ActionButton">
         <item name="android:src">@drawable/ic_more_vert_white_24dp</item>

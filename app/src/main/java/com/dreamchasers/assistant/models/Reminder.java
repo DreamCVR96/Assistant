@@ -3,8 +3,8 @@ package com.dreamchasers.assistant.models;
 public class Reminder {
 
     // Reminder types
-    public static final int ACTIVE = 1;
-    public static final int INACTIVE = 2;
+    public static final int ACTIVE = 0;
+    public static final int INACTIVE = 1;
 
     // Repetition types
     public static final int DOES_NOT_REPEAT = 0;

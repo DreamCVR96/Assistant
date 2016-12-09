@@ -18,6 +18,10 @@
     <dimen name="view_image_margin_side">26dp</dimen>
     <dimen name="text_margin_side">22dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="voice_input_margin">64dp</dimen>
+    <dimen name="response_output_margin">129dp</dimen>
+
+
     <dimen name="fab_recycler_view_padding">88dp</dimen>
     <dimen name="table_row_about_padding">18dp</dimen>
     <dimen name="text_about_margin_side">22dp</dimen>
