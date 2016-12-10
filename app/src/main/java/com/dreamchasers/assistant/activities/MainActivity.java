@@ -1,13 +1,17 @@
 package com.dreamchasers.assistant.activities;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,8 +28,10 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.dreamchasers.assistant.R;
+import com.dreamchasers.assistant.activities.shortcut.testas;
 import com.dreamchasers.assistant.adapters.ReminderAdapter;
 import com.dreamchasers.assistant.adapters.ViewPageAdapter;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +60,7 @@ import static com.dreamchasers.assistant.R.id.sendText;
 
 public class MainActivity extends AppCompatActivity implements ReminderAdapter.RecyclerListener, RecognitionListener {
 
+    public static final String RECEIVE_JSON = "com.dreamchasers.assistant";
     @BindView(R.id.tabs) PagerSlidingTabStrip pagerSlidingTabStrip;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab_button) FloatingActionButton floatingActionButton;
@@ -76,6 +83,19 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     public static final String TAG = MainActivity.class.getSimpleName();
     private final OkHttpClient client = new OkHttpClient();
 
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(RECEIVE_JSON)) {
+                String serviceJsonString = intent.getStringExtra("json");
+
+                Log.v("Gavom zinute is serviso", serviceJsonString);
+                Toast.makeText(getApplicationContext(),serviceJsonString, Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+    LocalBroadcastManager bManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,17 +161,21 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
             }
         });
 
+        bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(RECEIVE_JSON);
+        bManager.registerReceiver(bReceiver, intentFilter);
 
 
 
     } // onCreate finishes here@@@@2
 
 
-
-
-
-
-
+    @Override
+    protected void onDestroy() {
+        bManager.unregisterReceiver(bReceiver);
+        super.onDestroy();
+    }
 
     @OnClick(R.id.fab_button)
     public void fabClicked() {
@@ -520,6 +544,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                         "\"message\":{\n" +
                         "\"mid\":\"mid.145\""+ ",\n" +
                         "\"seq\":14"+ ",\n" +
+                        "\"androidID\":\""+ FirebaseInstanceId.getInstance().getToken() + "\",\n" +
                         "\"text\":" +"\"" + sendTextString + "\""+ "\n" +
                         "}\n"
                         + "}\n"
@@ -588,6 +613,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        //ijunkBroadCasta();
                         rTextView.setText(json);
                     }
                 });
