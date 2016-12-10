@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -107,6 +108,10 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         } else {
             assignReminderValues();
         }
+        String date="",msg="";
+        date = (String) getIntent().getExtras().get("date");
+        msg= (String) getIntent().getExtras().get("msg");
+        contentEditText.setText(msg);
     }
 
     public void assignReminderValues() {
@@ -241,6 +246,10 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
     public void repeatSelector() {
         DialogFragment dialog = new RepeatSelector();
         dialog.show(getSupportFragmentManager(), "RepeatSelector");
+    }
+
+    private void setTitle(String str){
+
     }
 
     @Override

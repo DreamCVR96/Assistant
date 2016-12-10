@@ -72,6 +72,8 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
        // Log.v("tagas? XD " , " gavau zinute is ateieties man.....");
         notificationBuilder.setContentTitle("FCM XD ");
         notificationBuilder.setContentText(str);
+        notificationBuilder.setSmallIcon(R.drawable.fb_m);
+
         notificationBuilder.setAutoCancel(true);
         notificationBuilder.setContentIntent(pendingIntent);
         NotificationManager notifactionManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
