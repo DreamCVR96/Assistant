@@ -558,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
 
                 final String json = response.body().string();
-
+ //Galima tiesiai response body i object mesti
 
               /*  try {
                     JSONObject jsnobject = new JSONObject(json);

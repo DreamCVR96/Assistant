@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dreamchasers.assistant.R;
 import com.dreamchasers.assistant.activities.MainActivity;
@@ -70,6 +71,8 @@ public class NewsFeedFragment extends Fragment {
                     String sndText = sendText.getText().toString();
                     try {
                         ((MainActivity)getActivity()).run(sndText);
+
+                        Toast.makeText(getContext(), "toast",Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -87,7 +90,7 @@ public class NewsFeedFragment extends Fragment {
             imageView.setImageResource(R.drawable.ic_notifications_black_empty);
             Log.v("FRAGMENT GET ITEM", "2");
             sendText.setVisibility(View.VISIBLE);
-            recyclerViewMain.setVisibility(View.GONE);
+            recyclerViewMain.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
             relativeLayout.setVisibility(View.VISIBLE);
       //      ((MainActivity)getActivity()).animateFab(2);

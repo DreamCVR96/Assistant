@@ -81,7 +81,6 @@
             android:textColor="@color/emptyColour"
             android:text="@string/no_active"
             android:layout_alignParentRight="true"
-
             android:layout_marginRight="70dp"
            />
 
