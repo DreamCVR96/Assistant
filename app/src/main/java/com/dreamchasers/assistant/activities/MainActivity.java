@@ -181,6 +181,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     public void fabClicked() {
         Intent intent = new Intent(this, CreateEditActivity.class);
         startActivity(intent);
+
+
     }
 
 

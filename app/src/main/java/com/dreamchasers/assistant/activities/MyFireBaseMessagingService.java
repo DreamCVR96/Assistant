@@ -73,6 +73,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         notificationBuilder.setContentTitle("FCM XD ");
         notificationBuilder.setContentText(str);
         notificationBuilder.setAutoCancel(true);
+        notificationBuilder.setSmallIcon(R.drawable.fb_m);
         notificationBuilder.setContentIntent(pendingIntent);
         NotificationManager notifactionManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notifactionManager.notify(0,notificationBuilder.build()) ;
@@ -87,6 +88,8 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         i.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
         sendBroadcast(i);
     }
+
+
 }
 
 
