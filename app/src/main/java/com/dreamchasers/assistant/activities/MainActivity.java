@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
+
         pagerSlidingTabStrip.setViewPager(viewPager);
         int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
         viewPager.setPageMargin(pageMargin);
