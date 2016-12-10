@@ -73,4 +73,5 @@
         <item>Specific days of the week</item>
         <item>Advanced</item>
     </string-array>
+    <string name="title_activity_reminder">ReminderActivity</string>
 </resources>

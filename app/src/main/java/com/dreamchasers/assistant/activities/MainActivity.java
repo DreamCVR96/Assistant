@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.dreamchasers.assistant.R;
+import com.dreamchasers.assistant.activities.shortcut.CreateEditShortcut;
 import com.dreamchasers.assistant.activities.shortcut.testas;
 import com.dreamchasers.assistant.adapters.ReminderAdapter;
 import com.dreamchasers.assistant.adapters.ViewPageAdapter;
@@ -89,13 +90,68 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(RECEIVE_JSON)) {
                 String serviceJsonString = intent.getStringExtra("json");
+                Log.v("cia" , serviceJsonString);
 
-                Log.v("Gavom zinute is serviso", serviceJsonString);
-                Toast.makeText(getApplicationContext(),serviceJsonString, Toast.LENGTH_LONG).show();
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(serviceJsonString);
+                } catch (JSONException e) {
+                    Log.v("We got an error..", "ERROR");
+                    e.printStackTrace();
+                }
+                try {
+                    obj = (JSONObject) obj.get("message");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                String msgType = "";
+
+                if(!obj.has("intent")) {
+                    Log.v("nera intento", "sveikutis");
+                    return;
+                }else{
+                    try {
+                        msgType = (String) obj.get("intent");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.v("gera negirdeti", msgType);
+                switch(msgType){
+                    case "reminder":
+                        String msg = "";
+                        try {
+                            msg = obj.getString("intentText");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        Toast.makeText(getApplicationContext(),"kaimnyas", Toast.LENGTH_LONG).show();
+                        Intent it = new Intent(MainActivity.this, CreateEditActivity.class);
+                        Bundle b=  new Bundle();
+                        String date="";
+                        try {
+                            date = obj.getString("date");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        b.putString("msg", msg);
+                        b.putString("date", date);
+                        it.putExtras(b);
+                        startActivity(it);
+                        break;
+                }
+
+
             }
         }
     };
     LocalBroadcastManager bManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+
 
         pagerSlidingTabStrip.setViewPager(viewPager);
         int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
