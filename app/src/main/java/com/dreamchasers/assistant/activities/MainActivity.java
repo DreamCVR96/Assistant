@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @BindView(R.id.fab_button1) FloatingActionButton floatingActionButton1;
     @BindView(R.id.vTextView) EditText vTextView;
     @BindView(R.id.rTextView) TextView rTextView;
-
     @BindView(R.id.viewpager) ViewPager viewPager;
 
     private boolean fabIsHidden = false;
@@ -110,8 +109,27 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
                 if(!obj.has("intent")) {
                     Log.v("nera intento", "sveikutis");
-                    return;
-                }else{
+                    
+                }
+                else if(obj.has("responseText")){
+                    String msg1 = "";
+                    Log.v("MSG!", "" + msg1);
+                    try {
+                        msg1 = (String) obj.get("responseText");
+                        msg1.toString();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.v("MSG!", "" + msg1);
+
+                    rTextView.setText(msg1);
+
+
+                }
+
+
+
+                else{
                     try {
                         msgType = (String) obj.get("intent");
                     } catch (JSONException e) {
@@ -142,8 +160,12 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                         b.putString("date", date);
                         it.putExtras(b);
                         startActivity(it);
+
                         break;
                 }
+
+
+
 
 
             }
