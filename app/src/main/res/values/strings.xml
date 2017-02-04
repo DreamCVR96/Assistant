@@ -74,4 +74,6 @@
         <item>Advanced</item>
     </string-array>
     <string name="title_activity_reminder">ReminderActivity</string>
+    <string name="Apprequires">"This app requires Google Play Services. Please install "</string>
+    <string name="GPSandrelaunch">Google Play Services on your device and relaunch this app.</string>
 </resources>

@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.support.annotation.IdRes;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -56,7 +59,7 @@ import okhttp3.Response;
 import static android.R.attr.data;
 import static com.dreamchasers.assistant.R.color.error;
 import static com.dreamchasers.assistant.R.id.rTextView;
-import static com.dreamchasers.assistant.R.id.sendText;
+
 
 
 public class MainActivity extends AppCompatActivity implements ReminderAdapter.RecyclerListener, RecognitionListener {
@@ -69,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @BindView(R.id.vTextView) EditText vTextView;
     @BindView(R.id.rTextView) TextView rTextView;
     @BindView(R.id.viewpager) ViewPager viewPager;
+
+
 
     private boolean fabIsHidden = false;
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -142,12 +147,13 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                         String msg = "";
                         try {
                             msg = obj.getString("intentText");
+                            rTextView.setText(msg);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
                         Toast.makeText(getApplicationContext(),"kaimnyas", Toast.LENGTH_LONG).show();
-                        Intent it = new Intent(MainActivity.this, CreateEditActivity.class);
+                       Intent it = new Intent(MainActivity.this, CreateEditActivity.class);
                         Bundle b=  new Bundle();
                         String date="";
                         try {
@@ -186,9 +192,13 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         speech.setRecognitionListener(this);
         setSupportActionBar(toolbar);
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(null);
         }
+
+
+
 
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
@@ -248,6 +258,9 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
 
     } // onCreate finishes here@@@@2
+
+
+
 
 
     @Override

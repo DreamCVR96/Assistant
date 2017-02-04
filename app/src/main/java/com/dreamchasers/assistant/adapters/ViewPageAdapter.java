@@ -92,25 +92,26 @@ public class ViewPageAdapter extends FragmentPagerAdapter implements PagerSlidin
 
             case 1:
                 bundle.putInt("TYPE", Reminder.ACTIVE);
-                Fragment tab2 = new TabFragment();
-                tab2.setArguments(bundle);
-                return tab2;
+                Fragment tab1 = new TabFragment();
+                tab1.setArguments(bundle);
+                return tab1;
+
 
 
             case 2:
 
-              //  bundle.putInt("TYPE", MainView.HOME);
-                Fragment alarmF = new AlarmsFragment();
-               // alarmF.setArguments(bundle);
+                bundle.putInt("TYPE", Reminder.INACTIVE);
+                Fragment tab2 = new TabFragment();
+                tab2.setArguments(bundle);
+                return tab2;
 
-                return alarmF;
             case 3:
 
-                bundle.putInt("TYPE", Reminder.INACTIVE);
-                Fragment tab3 = new TabFragment();
-                tab3.setArguments(bundle);
-                return tab3;
+                //  bundle.putInt("TYPE", MainView.HOME);
+                Fragment alarmF = new AlarmsFragment();
+                // alarmF.setArguments(bundle);
 
+                return alarmF;
             default:
                 Log.v("Fragment getItem", "Default, null");
                 return null;

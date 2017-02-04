@@ -76,6 +76,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
     private String icon;
     private String colour;
     private Calendar calendar;
+    private Calendar calendar1;
     private boolean[] daysOfWeek = new boolean[7];
     private int timesShown = 0;
     private int timesToShow = 1;
@@ -112,6 +113,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         date = (String) getIntent().getExtras().get("date");
         msg= (String) getIntent().getExtras().get("msg");
         contentEditText.setText(msg);
+
     }
 
     public void assignReminderValues() {
@@ -128,7 +130,9 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         icon = reminder.getIcon();
         colour = reminder.getColour();
 
+
         calendar = DateAndTimeUtil.parseDateAndTime(reminder.getDateAndTime());
+
 
         showText.setText(getString(R.string.times_shown_edit, reminder.getNumberShown()));
         titleEditText.setText(reminder.getTitle());
