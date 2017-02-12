@@ -5,7 +5,9 @@ package com.dreamchasers.assistant.fragments;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,6 +31,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 /**
  * Created by macpro on 11/28/16.
@@ -70,6 +74,10 @@ public class NewsFeedFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         } */
+
+
+
+
 
         argsType = this.getArguments().getInt("TYPE");
         if (argsType == MainView.HOME) {

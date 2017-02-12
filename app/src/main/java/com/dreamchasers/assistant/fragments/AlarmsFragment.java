@@ -66,7 +66,7 @@ public class AlarmsFragment extends Fragment {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String sndText = sendText.getText().toString();
                     try {
-                        ((MainActivity)getActivity()).run1(sndText);
+                        ((MainActivity)getActivity()).run(sndText);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

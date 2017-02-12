@@ -1,8 +1,10 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:design="http://schemas.android.com/tools">
     android:fitsSystemWindows="true"
+
 
     <FrameLayout
         android:id="@+id/header"
@@ -59,6 +61,7 @@
 
         </android.support.v4.view.ViewPager>
 
+
     </FrameLayout>
 
 
@@ -86,6 +89,17 @@
         app:useCompatPadding="false" />
 
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|bottom"
+        app:useCompatPadding="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/fb_m"
+        app:backgroundTint="@color/background"
+        />
+
     <EditText
         android:layout_width="305dp"
         android:layout_height="wrap_content"
@@ -98,16 +112,5 @@
         android:hint="Write a message..."
         />
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|bottom"
-        app:useCompatPadding="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/fb_m"
-        app:backgroundTint="@color/background"
-        />
 
 </android.support.design.widget.CoordinatorLayout>

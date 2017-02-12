@@ -10,7 +10,9 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -21,10 +23,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +39,8 @@ import com.dreamchasers.assistant.activities.shortcut.CreateEditShortcut;
 import com.dreamchasers.assistant.activities.shortcut.testas;
 import com.dreamchasers.assistant.adapters.ReminderAdapter;
 import com.dreamchasers.assistant.adapters.ViewPageAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
@@ -73,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @BindView(R.id.rTextView) TextView rTextView;
     @BindView(R.id.viewpager) ViewPager viewPager;
 
-
+    private DatabaseReference mDatabase;
+// ...
 
     private boolean fabIsHidden = false;
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -254,6 +261,28 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(RECEIVE_JSON);
         bManager.registerReceiver(bReceiver, intentFilter);
+
+
+
+
+        vTextView.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    String sndText = vTextView.getText().toString();
+                    try {
+                       run1(sndText);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
 
 
 
@@ -602,6 +631,10 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                 Intent aboutIntent = new Intent(this, AboutActivity.class);
                 startActivity(aboutIntent);
                 return true;
+            case R.id.sync:
+                Log.i("messenger", "syncing");
+                return true;
+
 
         }
         return super.onOptionsItemSelected(item);
