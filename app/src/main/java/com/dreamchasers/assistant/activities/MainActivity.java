@@ -1,31 +1,47 @@
 package com.dreamchasers.assistant.activities;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.dreamchasers.assistant.R;
+import com.dreamchasers.assistant.activities.shortcut.CreateEditShortcut;
+import com.dreamchasers.assistant.activities.shortcut.testas;
 import com.dreamchasers.assistant.adapters.ReminderAdapter;
 import com.dreamchasers.assistant.adapters.ViewPageAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,19 +65,22 @@ import okhttp3.Response;
 import static android.R.attr.data;
 import static com.dreamchasers.assistant.R.color.error;
 import static com.dreamchasers.assistant.R.id.rTextView;
-import static com.dreamchasers.assistant.R.id.sendText;
+
 
 
 public class MainActivity extends AppCompatActivity implements ReminderAdapter.RecyclerListener, RecognitionListener {
 
+    public static final String RECEIVE_JSON = "com.dreamchasers.assistant";
     @BindView(R.id.tabs) PagerSlidingTabStrip pagerSlidingTabStrip;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab_button) FloatingActionButton floatingActionButton;
     @BindView(R.id.fab_button1) FloatingActionButton floatingActionButton1;
     @BindView(R.id.vTextView) EditText vTextView;
     @BindView(R.id.rTextView) TextView rTextView;
-
     @BindView(R.id.viewpager) ViewPager viewPager;
+
+    private DatabaseReference mDatabase;
+// ...
 
     private boolean fabIsHidden = false;
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -77,6 +96,98 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     private final OkHttpClient client = new OkHttpClient();
 
 
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(RECEIVE_JSON)) {
+                String serviceJsonString = intent.getStringExtra("json");
+                Log.v("cia" , serviceJsonString);
+
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(serviceJsonString);
+                } catch (JSONException e) {
+                    Log.v("We got an error..", "ERROR");
+                    e.printStackTrace();
+                }
+                try {
+                    obj = (JSONObject) obj.get("message");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                String msgType = "";
+
+                if(!obj.has("intent")) {
+                    Log.v("nera intento", "sveikutis");
+                    
+                }
+                else if(obj.has("responseText")){
+                    String msg1 = "";
+                    Log.v("MSG!", "" + msg1);
+                    try {
+                        msg1 = (String) obj.get("responseText");
+                        msg1.toString();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.v("MSG!", "" + msg1);
+
+                    rTextView.setText(msg1);
+
+
+                }
+
+
+
+                else{
+                    try {
+                        msgType = (String) obj.get("intent");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.v("gera negirdeti", msgType);
+                switch(msgType){
+                    case "reminder":
+                        String msg = "";
+                        try {
+                            msg = obj.getString("intentText");
+                            rTextView.setText(msg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        Toast.makeText(getApplicationContext(),"kaimnyas", Toast.LENGTH_LONG).show();
+                       Intent it = new Intent(MainActivity.this, CreateEditActivity.class);
+                        Bundle b=  new Bundle();
+                        String date="";
+                        try {
+                            date = obj.getString("date");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        b.putString("msg", msg);
+                        b.putString("date", date);
+                        it.putExtras(b);
+                        startActivity(it);
+
+                        break;
+                }
+
+
+
+
+
+            }
+        }
+    };
+    LocalBroadcastManager bManager;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -85,18 +196,27 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         ButterKnife.bind(this);
       //  speech = SpeechRecognizer.createSpeechRecognizer(this);
        // speech.setRecognitionListener(this);
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        speech.setRecognitionListener(this);
         setSupportActionBar(toolbar);
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(null);
         }
 
+
+
+
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+
 
         pagerSlidingTabStrip.setViewPager(viewPager);
         int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
         viewPager.setPageMargin(pageMargin);
 
+
+        promptSpeechInput();
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs1);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -137,6 +257,34 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
             }
         });
 
+        bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(RECEIVE_JSON);
+        bManager.registerReceiver(bReceiver, intentFilter);
+
+
+
+
+        vTextView.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    String sndText = vTextView.getText().toString();
+                    try {
+                       run1(sndText);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+
 
     } // onCreate finishes here@@@@2
 
@@ -144,13 +292,18 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
 
 
-
-
+    @Override
+    protected void onDestroy() {
+        bManager.unregisterReceiver(bReceiver);
+        super.onDestroy();
+    }
 
     @OnClick(R.id.fab_button)
     public void fabClicked() {
         Intent intent = new Intent(this, CreateEditActivity.class);
         startActivity(intent);
+
+
     }
 
 
@@ -163,12 +316,12 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     /**
      * Showing google speech input dialog
      */
-    private void promptSpeechInput() {
+    public void promptSpeechInput() {
 
-        if (speech == null ){
-            speech = SpeechRecognizer.createSpeechRecognizer(this);
-            speech.setRecognitionListener(this);
-        }
+   //     if (speech == null ){
+     //       speech = SpeechRecognizer.createSpeechRecognizer(this);
+       //     speech.setRecognitionListener(this);
+        //}
 
 
          recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -185,7 +338,34 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                     getString(R.string.speech_not_supported),
                     Toast.LENGTH_SHORT).show();
         }
+
+
+
     }
+
+    /**
+     * Receiving speech input, not in use right one.
+     */
+
+    
+    /*
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                   vTextView.setText(result.get(0));
+                }
+                break;
+            }
+
+        }
+    } */
 
 
 
@@ -194,7 +374,6 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         Log.i(LOG_TAG, "onBeginningOfSpeech");
 
     }
-
     @Override
     public void onBufferReceived(byte[] buffer) {
         Log.i(LOG_TAG, "onBufferReceived: " + buffer);
@@ -254,6 +433,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @Override
     public void onResults(Bundle results) {
         Log.i(LOG_TAG, "onResults");
+    //    speech.stopListening();
 
         sendVoiceInput();
         //speech.stopListening();
@@ -362,6 +542,10 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @Override
     protected void onResume() {
         super.onResume();
+
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        speech.setRecognitionListener(this);
+
         switch (tabPosition) {
             case 0:
                 floatingActionButton1.show();
@@ -418,9 +602,17 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
          //   speech.stopListening();
 
              speech.destroy();
-            Log.i(LOG_TAG, "destroy");
+            Log.i(LOG_TAG, "destroy212");
         }
     }
+
+
+
+
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -439,6 +631,10 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                 Intent aboutIntent = new Intent(this, AboutActivity.class);
                 startActivity(aboutIntent);
                 return true;
+            case R.id.sync:
+                Log.i("messenger", "syncing");
+                return true;
+
 
         }
         return super.onOptionsItemSelected(item);
@@ -475,6 +671,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                         "\"message\":{\n" +
                         "\"mid\":\"mid.145\""+ ",\n" +
                         "\"seq\":14"+ ",\n" +
+                        "\"androidID\":\""+ FirebaseInstanceId.getInstance().getToken() + "\",\n" +
                         "\"text\":" +"\"" + sendTextString + "\""+ "\n" +
                         "}\n"
                         + "}\n"
@@ -513,7 +710,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
 
                 final String json = response.body().string();
-
+ //Galima tiesiai response body i object mesti
 
               /*  try {
                     JSONObject jsnobject = new JSONObject(json);
@@ -543,6 +740,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        //ijunkBroadCasta();
                         rTextView.setText(json);
                     }
                 });

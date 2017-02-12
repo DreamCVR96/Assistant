@@ -73,4 +73,13 @@
         <item>Specific days of the week</item>
         <item>Advanced</item>
     </string-array>
+    <string name="title_activity_reminder">ReminderActivity</string>
+    <string name="Apprequires">"This app requires Google Play Services. Please install "</string>
+    <string name="GPSandrelaunch">Google Play Services on your device and relaunch this app.</string>
+    <string name="home">home</string>
+    <string name="textInput">text</string>
+    <string name="voiceInputItem">voice</string>
+    <string name="interfaceInput">button</string>
+    <string name="sync">Sync with messenger</string>
+
 </resources>

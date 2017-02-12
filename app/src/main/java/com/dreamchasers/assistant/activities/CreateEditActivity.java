@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,12 +40,21 @@ import com.dreamchasers.assistant.utils.AlarmUtil;
 import com.dreamchasers.assistant.utils.AnimationUtil;
 import com.dreamchasers.assistant.utils.DateAndTimeUtil;
 import com.dreamchasers.assistant.utils.TextFormatUtil;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static android.R.attr.data;
 
 public class CreateEditActivity extends AppCompatActivity implements ColorChooserDialog.ColorCallback,
         IconPicker.IconSelectionListener, AdvancedRepeatSelector.AdvancedRepeatSelectionListener,
@@ -75,12 +85,15 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
     private String icon;
     private String colour;
     private Calendar calendar;
+    private Calendar calendar1;
     private boolean[] daysOfWeek = new boolean[7];
     private int timesShown = 0;
     private int timesToShow = 1;
     private int repeatType;
     private int id;
     private int interval = 1;
+    private DatabaseReference mDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +120,16 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         } else {
             assignReminderValues();
         }
+        String date="",msg="";
+        date = (String) getIntent().getExtras().get("date");
+        msg= (String) getIntent().getExtras().get("msg");
+        titleEditText.setText(msg);
+
+// nepamirsti pasettinti datetime
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/users")
+                .child(FirebaseInstanceId.getInstance().getToken()).child("reminders");
+
     }
 
     public void assignReminderValues() {
@@ -123,7 +146,9 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         icon = reminder.getIcon();
         colour = reminder.getColour();
 
+
         calendar = DateAndTimeUtil.parseDateAndTime(reminder.getDateAndTime());
+
 
         showText.setText(getString(R.string.times_shown_edit, reminder.getNumberShown()));
         titleEditText.setText(reminder.getTitle());
@@ -243,6 +268,10 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         dialog.show(getSupportFragmentManager(), "RepeatSelector");
     }
 
+    private void setTitle(String str){
+
+    }
+
     @Override
     public void onRepeatSelection(DialogFragment dialog, int which, String repeatText) {
         interval = 1;
@@ -286,6 +315,9 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
                 .setColour(colour)
                 .setInterval(interval);
 
+
+
+
         database.addNotification(reminder);
 
         if (repeatType == Reminder.SPECIFIC_DAYS) {
@@ -298,6 +330,19 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         calendar.set(Calendar.SECOND, 0);
         AlarmUtil.setAlarm(this, alarmIntent, reminder.getId(), calendar);
         finish();
+
+
+        HashMap <String, String> reminderMap = new HashMap<String, String>();
+        reminderMap.put("reminder_text",titleEditText.getText().toString());
+        reminderMap.put("datetime",DateAndTimeUtil.toStringDateAndTime(calendar));
+
+        mDatabase.push().setValue(reminderMap);
+
+
+
+
+
+
     }
 
     @OnClick(R.id.forever_row)
