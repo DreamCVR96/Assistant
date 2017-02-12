@@ -133,7 +133,10 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
 
 
 
-         //   Calendar clnd = DateAndTimeUtil.parseDateAndTime(reminder.getDateAndTime());
+         //   Calendar
+            // clnd = DateAndTimeUtil.parseDateAndTime(reminder.getDateAndTime());
+
+
 
             //dateText.setText(DateAndTimeUtil.toStringReadableDate(calendar));
             SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
