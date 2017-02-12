@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                         e.printStackTrace();
                     }
                 }
-                Log.v("gera negirdeti", msgType);
                 switch(msgType){
                     case "reminder":
                         String msg = "";
@@ -160,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                         }
 
                         Toast.makeText(getApplicationContext(),"kaimnyas", Toast.LENGTH_LONG).show();
-                       Intent it = new Intent(MainActivity.this, CreateEditActivity.class);
+                        Intent it = new Intent(MainActivity.this, CreateEditActivity.class);
                         Bundle b=  new Bundle();
                         String date="";
                         try {
