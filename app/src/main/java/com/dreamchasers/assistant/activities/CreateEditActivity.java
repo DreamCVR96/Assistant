@@ -39,6 +39,7 @@ import com.dreamchasers.assistant.receivers.AlarmReceiver;
 import com.dreamchasers.assistant.utils.AlarmUtil;
 import com.dreamchasers.assistant.utils.AnimationUtil;
 import com.dreamchasers.assistant.utils.DateAndTimeUtil;
+import com.dreamchasers.assistant.utils.DateHelper;
 import com.dreamchasers.assistant.utils.TextFormatUtil;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -55,6 +56,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static android.R.attr.data;
+import static android.R.attr.format;
 
 public class CreateEditActivity extends AppCompatActivity implements ColorChooserDialog.ColorCallback,
         IconPicker.IconSelectionListener, AdvancedRepeatSelector.AdvancedRepeatSelectionListener,
@@ -93,7 +95,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
     private int id;
     private int interval = 1;
     private DatabaseReference mDatabase;
-
+    private DateHelper dateHelper = new DateHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,10 +123,40 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
             assignReminderValues();
         }
         String date="",msg="";
-        date = (String) getIntent().getExtras().get("date");
-        msg= (String) getIntent().getExtras().get("msg");
-        titleEditText.setText(msg);
+        Date convertedDate = null;
+        if(getIntent().hasExtra("date")) {
+            date = (String) getIntent().getExtras().get("date");
+            Log.v("data gauta: ", date);
+            convertedDate = new DateHelper().string2Date(date);
+            Log.v("display", convertedDate.toString());
 
+
+
+
+         //   Calendar clnd = DateAndTimeUtil.parseDateAndTime(reminder.getDateAndTime());
+
+            //dateText.setText(DateAndTimeUtil.toStringReadableDate(calendar));
+            SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = dayFormat.format((convertedDate));
+
+            dateText.setText(formattedDate);
+
+            Log.v("valandos", String.valueOf(convertedDate.getHours()));
+
+            calendar.set(Calendar.HOUR_OF_DAY, convertedDate.getHours());
+            calendar.set(Calendar.MINUTE, convertedDate.getMinutes());
+
+
+
+
+             timeText.setText(dateHelper.stringTime(convertedDate.getHours(),convertedDate.getMinutes()));
+        }
+
+        if(getIntent().hasExtra("msg")) {
+            msg = (String) getIntent().getExtras().get("msg");
+            titleEditText.setText(msg);
+
+        }
 // nepamirsti pasettinti datetime
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/users")
