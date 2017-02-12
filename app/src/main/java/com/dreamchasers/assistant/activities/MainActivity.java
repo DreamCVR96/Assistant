@@ -537,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
 */
 
-                Log.e("response", "" + json);
+                Log.e("response", " cia turetu buti n   " + response.toString());
 
                // JsonArray jsonArray = response.
                 runOnUiThread(new Runnable() {
@@ -566,6 +566,8 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 // //////sa121
         OkHttpClient client1 = new OkHttpClient();
 
+
+
         Request request1 = new Request.Builder()
                 .addHeader("Authorization", "Bearer UUGTBYRVSCXBQRC72NI2OQGOPK63EFGG")
                 .url("https://api.wit.ai/message?20161208&q=remind%20me%20to%20buy%20grocories%20tomorrow%205%20pm")
@@ -584,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                     throw new IOException("Unexpected code " + response);
                 } else {
 
-                    Log.e("response", response.body().string());
+                    Log.e("response", response.body().string() + " asdasdsadadsadsadsa");
                 }
             }
         });
