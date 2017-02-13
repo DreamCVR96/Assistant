@@ -1,5 +1,8 @@
 package com.dreamchasers.assistant.adapters;
 
+import android.content.ContentUris;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.widget.TextView;
 
 import com.dreamchasers.assistant.R;
 
+import com.dreamchasers.assistant.activities.MainActivity;
 import com.dreamchasers.assistant.activities.ViewHolder2;
 import com.dreamchasers.assistant.activities.ViewHolder3;
 import com.dreamchasers.assistant.models.Album;
@@ -17,6 +21,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.R.attr.onClick;
+import static android.os.Build.VERSION_CODES.M;
 
 
 /**
@@ -109,18 +116,33 @@ public class ComplexRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
     private void configureViewHolder2(ViewHolder2 vh2, int position) {
         vh2.getImageView().setImageResource(R.drawable.fbmelogo1);
+       vh2.getImageView().setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Uri uri = Uri.parse("fb-messenger://user/");
+               uri = ContentUris.withAppendedId(uri,580366185473843L);
+               Intent intent2 = new Intent(Intent.ACTION_VIEW, uri);
+               v.getContext().startActivity(intent2);
+           }
+       });
+
 
     }
 
     private void configureViewHolder3(ViewHolder3 vh3, int position) {
         Album album = (Album) items.get(position);
         if (album != null) {
-          //  vh3.getThumbnail().setImageResource(R.drawable.album1);
-           // vh3.getTextView().setText("G EAZY");
+
+
+            
+
         }
 
 
 
 
     }
+
+
+
 }

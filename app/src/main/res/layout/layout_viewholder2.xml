@@ -22,7 +22,8 @@ android:layout_height="wrap_content">
             android:id="@+id/meLogo"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:adjustViewBounds="true" />
+            android:adjustViewBounds="true"
+            />
 
         <TextView
             android:text="Send to messenger"

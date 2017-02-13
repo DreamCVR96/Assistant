@@ -2,9 +2,11 @@ package com.dreamchasers.assistant.activities;
 
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -309,6 +311,20 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     @OnClick(R.id.fab_button1)
     public void mainFabClicked() {
         promptSpeechInput();
+
+
+
+    }
+
+    // Function to sent user to messenger interface
+
+
+    public void goToMessenger(){
+
+        Uri uri = Uri.parse("fb-messenger://user/");
+        uri = ContentUris.withAppendedId(uri,580366185473843L);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
 
     }
 
