@@ -142,12 +142,20 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
             SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formattedDate = dayFormat.format((convertedDate));
 
-            dateText.setText(formattedDate);
 
-            Log.v("valandos", String.valueOf(convertedDate.getHours()));
+           String diena = (String) DateFormat.format("dd", convertedDate);
+           String menuo = (String) DateFormat.format("MM", convertedDate);
+           String metai = (String) DateFormat.format("yyyy", convertedDate);
+
+            dateText.setText(formattedDate);
 
             calendar.set(Calendar.HOUR_OF_DAY, convertedDate.getHours());
             calendar.set(Calendar.MINUTE, convertedDate.getMinutes());
+
+            Log.v("yearTest", String.valueOf(convertedDate.getDay()));
+            calendar.set(Calendar.YEAR, Integer.parseInt(metai));
+            calendar.set(Calendar.MONTH, Integer.parseInt(menuo));
+            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(diena));
 
 
 
