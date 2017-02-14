@@ -14,4 +14,12 @@
     <color name="emptyColour">#bababa</color>
     <color name="album_title">#4c4c4c</color>
 
+
+    <color name="colorPrimary">#9C27B0</color>
+    <color name="colorPrimaryDark">#7B1FA2</color>
+    <color name="colorAccent">#FE3F80</color>
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#727272</color>
+    <color name="white">#fff</color>
+    <color name="background1">#dae2e2e2</color>
 </resources>

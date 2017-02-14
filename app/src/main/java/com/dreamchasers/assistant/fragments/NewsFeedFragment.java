@@ -2,31 +2,25 @@ package com.dreamchasers.assistant.fragments;
 
 
 
-import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.ScaleAnimation;
+import android.widget.TextView;
 
 import com.dreamchasers.assistant.R;
 import com.dreamchasers.assistant.adapters.AlbumAdapter;
-import com.dreamchasers.assistant.adapters.ComplexRecyclerViewAdapter;
 import com.dreamchasers.assistant.models.Album;
 import com.dreamchasers.assistant.models.MainView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,7 +38,18 @@ public class NewsFeedFragment extends Fragment {
     private String mVoiceInput = "";
     private AlbumAdapter adapter;
     private List<Album> albumList;
-    @BindView(R.id.recycler_view_main_feed) RecyclerView recyclerViewMain;
+
+
+    private StaggeredGridLayoutManager mLayoutManager;
+    private TextView tvNoMovies;
+    ScaleAnimation shrinkAnim;
+
+    //Getting reference to Firebase Database
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference mDatabaseReference = database.getReference();
+    private static final String userId = "dUDWCUkPXAI:APA91bF8TlQlEZdXLVQMJQktY6J2" +
+            "bcOPZRHvbMr41Jx3Lz1hQxo6KNeRPBEGtoarY5DiMCH2C8XAy2fdcVrO5XXbbOu_XtY1KqM" +
+            "WiRhowm6UKF_4v5v83e4RsGmg_fnEcR8p38q-s1uJ";
 
 
     @Override
@@ -56,24 +61,9 @@ public class NewsFeedFragment extends Fragment {
     public void onViewCreated(View view, Bundle bundle) {
         super.onViewCreated(view, bundle);
         ButterKnife.bind(this, view);
-     /*   albumList = new ArrayList<>();
-        adapter = new AlbumAdapter(getActivity(), albumList); */
 
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 1);
-        recyclerViewMain.setLayoutManager(mLayoutManager);
-
-       // recyclerViewMain.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
-        //recyclerViewMain.setItemAnimator(new DefaultItemAnimator());
-        //recyclerViewMain.setAdapter(adapter);
-        bindDataToAdapter();
         initCollapsingToolbar();
-     //   prepareAlbums();
 
-     /*   try {
-            Glide.with(this).load(R.drawable.cover).into((ImageView) findViewById(R.id.backdrop));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } */
 
 
 
@@ -85,7 +75,7 @@ public class NewsFeedFragment extends Fragment {
         //    imageView.setImageResource(R.drawable.ic_notifications_black_empty);
             Log.v("FRAGMENT GET ITEM", "MAIN/O");
 
-           recyclerViewMain.setVisibility(View.VISIBLE);
+
           //  linearLayout.setVisibility(View.GONE);
            // relativeLayout.setVisibility(View.VISIBLE);
 
@@ -95,55 +85,14 @@ public class NewsFeedFragment extends Fragment {
     }
 
 
-    /**
-     * Adding few albums for testing
-     */
-    private void prepareAlbums() {
-        int[] covers = new int[]{
-                R.drawable.album1,
-                R.drawable.album2,
-                R.drawable.album3,
-                R.drawable.album4,
-                R.drawable.album5,
-                R.drawable.album6,
-                R.drawable.album7,
-                R.drawable.album8,
-                R.drawable.album9,
-                R.drawable.album10,
-                R.drawable.album11};
 
-        Album a = new Album("True Romance", 13, covers[0]);
-        albumList.add(a);
 
-        a = new Album("Xscpae", 8, covers[1]);
-        albumList.add(a);
 
-        a = new Album("Maroon 5", 11, covers[2]);
-        albumList.add(a);
 
-        a = new Album("Born to Die", 12, covers[3]);
-        albumList.add(a);
 
-        a = new Album("Honeymoon", 14, covers[4]);
-        albumList.add(a);
 
-        a = new Album("I Need a Doctor", 1, covers[5]);
-        albumList.add(a);
 
-        a = new Album("Loud", 11, covers[6]);
-        albumList.add(a);
 
-        a = new Album("Legend", 14, covers[7]);
-        albumList.add(a);
-
-        a = new Album("Hello", 11, covers[8]);
-        albumList.add(a);
-
-        a = new Album("Greatest Hits", 17, covers[9]);
-        albumList.add(a);
-
-        adapter.notifyDataSetChanged();
-    }
     /**
      * Initializing collapsing toolbar
      * Will show and hide the toolbar title on scroll
@@ -167,10 +116,13 @@ public class NewsFeedFragment extends Fragment {
                 }
                 if (scrollRange + verticalOffset == 0) {
                     collapsingToolbar.setTitle(getString(R.string.app_name));
+                    appBarLayout.setVisibility(View.INVISIBLE);
                     isShow = true;
                 }
                 else if (isShow) {
                     collapsingToolbar.setTitle(" ");
+                    appBarLayout.setVisibility(View.VISIBLE);
+
                     isShow = false;
                 }
             }
@@ -178,112 +130,6 @@ public class NewsFeedFragment extends Fragment {
     }
 
 
-    /**
-     * RecyclerView item decoration - give equal margin around grid item
-     */
-    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
-
-        private int spanCount;
-        private int spacing;
-        private boolean includeEdge;
-
-        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
-            this.spanCount = spanCount;
-            this.spacing = spacing;
-            this.includeEdge = includeEdge;
-        }
-
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int position = parent.getChildAdapterPosition(view); // item position
-            int column = position % spanCount; // item column
-
-            if (includeEdge) {
-                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-
-                if (position < spanCount) { // top edge
-                    outRect.top = spacing;
-                }
-                outRect.bottom = spacing; // item bottom
-            } else {
-                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
-                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-                if (position >= spanCount) {
-                    outRect.top = spacing; // item top
-                }
-            }
-        }
-    }
-
-    /**
-     * Converting dp to pixel
-     */
-    private int dpToPx(int dp) {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
-    }
-
-
-    private ArrayList<Object> getSampleArrayList() {
-        ArrayList<Object> items = new ArrayList<>();
-        items.add("image");
-        items.add(new Album("I Need a Doctor", 1, R.drawable.album1));
-        items.add(new Album("I Need a Doctor", 2, R.drawable.album5));
-        items.add(new Album("I Need a Doctor", 3, R.drawable.album4));
-        items.add(new Album("I Need a Doctor", 4, R.drawable.album3));
-
-
-        int[] covers = new int[]{
-                R.drawable.album1,
-                R.drawable.album2,
-                R.drawable.album3,
-                R.drawable.album4,
-                R.drawable.album5,
-                R.drawable.album6,
-                R.drawable.album7,
-                R.drawable.album8,
-                R.drawable.album9,
-                R.drawable.album10,
-                R.drawable.album11};
-
-        Album a = new Album("True Romance", 13, covers[0]);
-        items.add(a);
-
-        a = new Album("Xscpae", 8, covers[1]);
-        items.add(a);
-
-        a = new Album("Maroon 5", 11, covers[2]);
-        items.add(a);
-
-        a = new Album("Born to Die", 12, covers[3]);
-        items.add(a);
-
-        a = new Album("Honeymoon", 14, covers[4]);
-        items.add(a);
-
-        a = new Album("I Need a Doctor", 1, covers[5]);
-        items.add(a);
-
-        a = new Album("Loud", 11, covers[6]);
-        items.add(a);
-
-        a = new Album("Legend", 14, covers[7]);
-        items.add(a);
-
-        a = new Album("Hello", 11, covers[8]);
-        items.add(a);
-
-        a = new Album("Greatest Hits", 17, covers[9]);
-        items.add(a);
-
-
-        return items;
-    }
-
-    private void bindDataToAdapter() {
-        // Bind adapter to recycler view object
-        recyclerViewMain.setAdapter(new ComplexRecyclerViewAdapter(getSampleArrayList()));
 
     }
-}
+
