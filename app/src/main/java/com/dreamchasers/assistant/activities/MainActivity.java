@@ -13,6 +13,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
     private DatabaseReference mDatabase;
 // ...
-
+    private DatabaseReference fDataBase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
     private boolean fabIsHidden = false;
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private TabLayout tabLayout;
@@ -647,6 +648,13 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                 startActivity(aboutIntent);
                 return true;
             case R.id.sync:
+                String newId = fDataBase.child("sync").push().getKey();
+                fDataBase.child("sync").child(newId).child("id").setValue(FirebaseInstanceId.getInstance().getToken());
+                fDataBase.child("sync").child(newId).child("type").setValue("android");
+
+              //  fDataBase.child("sync").push().
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://stormy-wildwood-31519.herokuapp.com/auth/facebook?id="+newId));
+                startActivity(browserIntent);
                 Log.i("messenger", "syncing");
                 return true;
 
