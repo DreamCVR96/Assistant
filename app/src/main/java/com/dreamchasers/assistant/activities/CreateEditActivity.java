@@ -3,6 +3,7 @@ package com.dreamchasers.assistant.activities;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
@@ -25,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.dreamchasers.assistant.database.DatabaseHelper;
@@ -41,8 +43,11 @@ import com.dreamchasers.assistant.utils.AnimationUtil;
 import com.dreamchasers.assistant.utils.DateAndTimeUtil;
 import com.dreamchasers.assistant.utils.DateHelper;
 import com.dreamchasers.assistant.utils.TextFormatUtil;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.ParseException;
@@ -57,6 +62,8 @@ import butterknife.OnClick;
 
 import static android.R.attr.data;
 import static android.R.attr.format;
+import static com.dreamchasers.assistant.activities.MainActivity.userKeyId;
+import static com.google.common.base.Predicates.equalTo;
 
 public class CreateEditActivity extends AppCompatActivity implements ColorChooserDialog.ColorCallback,
         IconPicker.IconSelectionListener, AdvancedRepeatSelector.AdvancedRepeatSelectionListener,
@@ -86,6 +93,8 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
 
     private String icon;
     private String colour;
+    public final String DEFAULTUSERID1 = "N/A";
+
     private Calendar calendar;
     private Calendar calendar1;
     private boolean[] daysOfWeek = new boolean[7];
@@ -170,10 +179,76 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         }
 // nepamirsti pasettinti datetime
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/users")
-                .child(FirebaseInstanceId.getInstance().getToken()).child("reminders");
+
+     //   FirebaseInstanceId.getInstance().getToken()
+
+
+   //     mDatabase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/users")
+     //           .orderByChild("android_id")
+       //         .equalTo(FirebaseInstanceId.getInstance().getToken())
+         //       .limitToFirst(1).getRef();
+
+
+/*        FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/users")
+                .orderByChild("android_id")
+                .equalTo(FirebaseInstanceId.getInstance().getToken())
+                .limitToFirst(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot childSnapshot: dataSnapshot.getChildren()) {
+                            String userKey = childSnapshot.getKey();
+                            userKey1 = userKey;
+                            Log.v("userKey", " " + userKey);
+
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });*/
+
+
+        SharedPreferences sharedPreferences1 = getSharedPreferences("userKey", MODE_PRIVATE);
+        String usrKey1 = sharedPreferences1.getString("userKey", DEFAULTUSERID1);
+
+
+        if(usrKey1.equals(DEFAULTUSERID1)){
+
+            Toast.makeText(this, "Cant you?", Toast.LENGTH_LONG).show();
+
+            mDatabase = FirebaseDatabase.getInstance().getReference()
+                    .child("server/saving-data/sidekicks/users")
+                    .child(FirebaseInstanceId.getInstance().getToken())
+                    .child("reminders");
+
+    } else {
+
+            mDatabase = FirebaseDatabase.getInstance().getReference()
+                    .child("server/saving-data/sidekicks/users")
+                    .child(usrKey1)
+                    .child("reminders");
+
+            Toast.makeText(this, "You can, sir", Toast.LENGTH_LONG).show();
+
+        }
+
+//        Log.v("PLOVYKLA", " " + userKeyId);//
+
+  //      Log.v("PLOVYKLA", " " + FirebaseInstanceId.getInstance().getToken());
+
+
 
     }
+
+
+
+
+
 
     public void assignReminderValues() {
         // Prevent keyboard from opening automatically
@@ -375,7 +450,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         finish();
 
 
-        HashMap <String, String> reminderMap = new HashMap<String, String>();
+       HashMap <String, String> reminderMap = new HashMap<>();
         reminderMap.put("reminder_text",titleEditText.getText().toString());
         reminderMap.put("datetime",DateAndTimeUtil.toStringDateAndTime(calendar));
 

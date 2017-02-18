@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="userKeyId" translatable="false"></string>
+    <string name="voice_input" translatable="false"></string>
     <string name="about">About</string>
-    <string name="voice_input"></string>
     <string name="speech_prompt">Say something</string>
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
     <string name="settings">Settings</string>
@@ -81,5 +82,6 @@
     <string name="voiceInputItem">voice</string>
     <string name="interfaceInput">button</string>
     <string name="sync">Sync with messenger</string>
+
 
 </resources>

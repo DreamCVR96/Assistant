@@ -55,8 +55,9 @@ dependencies {
     compile 'com.github.tibolte:agendacalendarview:1.0.4'
     compile 'com.google.firebase:firebase-database:10.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
-
-
+    compile ('com.github.florent37:materialviewpager:1.2.0@aar'){
+        transitive = true
+    }
     compile 'com.firebaseui:firebase-ui-database:1.1.1'
 
 

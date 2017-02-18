@@ -6,24 +6,24 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -33,20 +33,27 @@ import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.dreamchasers.assistant.R;
-import com.dreamchasers.assistant.activities.shortcut.CreateEditShortcut;
-import com.dreamchasers.assistant.activities.shortcut.testas;
 import com.dreamchasers.assistant.adapters.ReminderAdapter;
-import com.dreamchasers.assistant.adapters.ViewPageAdapter;
+import com.dreamchasers.assistant.fragments.NewsFeedFragment;
+import com.dreamchasers.assistant.utils.FirebaseRef;
+import com.dreamchasers.assistant.viewholders.RemindersHolder;
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.github.florent37.materialviewpager.MaterialViewPager;
+import com.github.florent37.materialviewpager.header.HeaderDesign;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,33 +72,34 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.R.attr.data;
-import static com.dreamchasers.assistant.R.color.error;
-import static com.dreamchasers.assistant.R.id.rTextView;
+import static com.dreamchasers.assistant.utils.FirebaseRef.mDatabase;
 
 
-
-public class MainActivity extends AppCompatActivity implements ReminderAdapter.RecyclerListener, RecognitionListener {
+public class MainActivity extends AppCompatActivity implements RecognitionListener {
 
     public static final String RECEIVE_JSON = "com.dreamchasers.assistant";
-    @BindView(R.id.tabs) PagerSlidingTabStrip pagerSlidingTabStrip;
-    @BindView(R.id.toolbar) Toolbar toolbar;
+   // @BindView(R.id.tabs) PagerSlidingTabStrip pagerSlidingTabStrip;
+   // @BindView(R.id.toolbar) Toolbar toolbar;
+    private Toolbar toolbar;
     @BindView(R.id.fab_button) FloatingActionButton floatingActionButton;
     @BindView(R.id.fab_button1) FloatingActionButton floatingActionButton1;
-    @BindView(R.id.vTextView) EditText vTextView;
-    @BindView(R.id.rTextView) TextView rTextView;
-    @BindView(R.id.viewpager) ViewPager viewPager;
+    @BindView(R.id.view_textview) EditText vTextView;
+    @BindView(R.id.return_textView) TextView rTextView;
+    //@BindView(R.id.viewpager) ViewPager viewPager;
+    @BindView(R.id.materialViewPager) MaterialViewPager mViewPager;
+    private FirebaseRecyclerAdapter mAdapter;
 
-    private DatabaseReference mDatabase;
-// ...
     private DatabaseReference fDataBase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
+
     private boolean fabIsHidden = false;
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private TabLayout tabLayout;
     private int tabPosition;
     private String mainServerUrl = "https://stormy-wildwood-31519.herokuapp.com/android";
     private String sendTextString;
+    public final String DEFAULTUSERID = "N/A";
 
+    public static String userKeyId;
     public Intent recognizerIntent;
     private String LOG_TAG = "VoiceRecognition";
     private SpeechRecognizer speech = null;
@@ -189,37 +197,134 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     LocalBroadcastManager bManager;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-      //  speech = SpeechRecognizer.createSpeechRecognizer(this);
-       // speech.setRecognitionListener(this);
+        //  speech = SpeechRecognizer.createSpeechRecognizer(this);
+        // speech.setRecognitionListener(this);
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         speech.setRecognitionListener(this);
         setSupportActionBar(toolbar);
+
+
+
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(null);
         }
 
+        toolbar = mViewPager.getToolbar();
+        setTitle("");
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+       //  toolbar.setNavigationIcon(R.drawable);
 
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayUseLogoEnabled(false);
+            actionBar.setHomeButtonEnabled(true);
 
-
-        ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-
-
-        pagerSlidingTabStrip.setViewPager(viewPager);
-        int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
-        viewPager.setPageMargin(pageMargin);
-
+        }
 
         promptSpeechInput();
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs1);
+
+
+
+
+
+
+        mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+
+            @Override
+            public Fragment getItem(int position) {
+                switch (position % 4) {
+                    //case 0:
+                    //    return RecyclerViewFragment.newInstance();
+                    //case 1:
+                    //    return RecyclerViewFragment.newInstance();
+                    //case 2:
+                    //    return WebViewFragment.newInstance();
+                    default:
+                        return NewsFeedFragment.newInstance();
+                }
+            }
+
+            @Override
+            public int getCount() {
+                return 4;
+            }
+
+            @Override
+            public CharSequence getPageTitle(int position) {
+                switch (position % 4) {
+                    case 0:
+                        return "Main feed";
+                    case 1:
+                        return "Reminders";
+                    case 2:
+                        return "Agenda";
+                    case 3:
+                        return "Habits";
+                }
+                return "";
+            }
+        });
+
+
+
+
+
+/*
+        ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
+        ViewPager viewPager = mViewPager.getViewPager();
+        viewPager.setAdapter(adapter);
+*/
+
+
+        //After set an adapter to the ViewPager
+        mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
+
+
+       //pagerSlidingTabStrip.setViewPager(viewPager);
+        //int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+       // viewPager.setPageMargin(pageMargin);
+
+
+        mViewPager.setMaterialViewPagerListener(new MaterialViewPager.Listener() {
+            @Override
+            public HeaderDesign getHeaderDesign(int page) {
+                switch (page) {
+                    case 0:
+                        return HeaderDesign.fromColorResAndUrl(
+                                R.color.blue,
+                                "http://wallpapercave.com/wp/aZlqiAT.png");
+                    case 1:
+                        return HeaderDesign.fromColorResAndUrl(
+                                R.color.green,
+                                "http://www.kunggu.com/resize/resize-img.php?src=http://www.kunggu.com/images/Rendering/clouds-moon-night-star2603.jpg&h=600&w=1024");
+                    case 2:
+                        return HeaderDesign.fromColorResAndUrl(
+                                R.color.cyan,
+                                "https://s-media-cache-ak0.pinimg.com/originals/4e/a7/fb/4ea7fb833c63a4ea0b0fb696c5919dd7.png");
+                    case 3:
+                        return HeaderDesign.fromColorResAndUrl(
+                                R.color.red,
+                                "http://more-sky.com/data/out/4/IMG_40740.png");
+                }
+
+                //execute others actions if needed (ex : modify you headder logo ? :/
+
+                return null;
+            }
+        });
+
+
+       /* TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs1);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -257,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-        });
+        });*/
 
         bManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
@@ -288,11 +393,77 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
 
 
 
+        CheckandSaveUserID();
+
     } // onCreate finishes here@@@@2
 
 
 
 
+// Check if we have user id, if not saves it into sharedpreferences.
+    public void CheckandSaveUserID(){
+
+
+
+   /*     SharedPreferences sharedPreferences = getSharedPreferences("userKey", MODE_PRIVATE);
+
+
+        String usrKey = sharedPreferences.getString("userKey", DEFAULTUSERID);
+
+
+        Log.v("PLOVYKLA", "@@@@@@   " + usrKey);
+
+            if(usrKey.equals(DEFAULTUSERID)){
+            Toast.makeText(this, "changing", Toast.LENGTH_LONG).show();*/
+
+            try {
+                FirebaseRef.getDatabase().getReference().child("server/saving-data/sidekicks/users")
+                        .orderByChild("android_id")
+                        .equalTo(FirebaseInstanceId.getInstance().getToken())
+                        .limitToFirst(1)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                    String userKey = childSnapshot.getKey();
+                                    userKeyId = userKey;
+                                    SharedPreferences sharedPreferences1 = getSharedPreferences("userKey", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences1.edit();
+                                    editor.putString("userKey", userKeyId);
+                                    editor.commit();
+
+                                }
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.v("PLOVYKLA", "CANCEELL " );
+
+                            }
+                        });
+            } catch(Exception e){}
+
+
+
+                    Log.v("PLOVYKLA", " RIP");
+
+
+
+
+
+/*
+        } else {
+            Toast.makeText(this, "BOY YOU MADE IT", Toast.LENGTH_LONG).show();
+         Log.v("SharedPrefenrences", "Something is wrong, check it out, dreamchaser");
+
+        }*/
+
+
+
+
+    }
 
     @Override
     protected void onDestroy() {
@@ -500,15 +671,6 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
     }
 
 
-    @Override
-    public void hideFab() {
-        floatingActionButton.hide();
-        fabIsHidden = true;
-    }
-
-
-
-
     public void showFab() {
         floatingActionButton.show();
         fabIsHidden = false;
@@ -651,10 +813,22 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
                 String newId = fDataBase.child("sync").push().getKey();
                 fDataBase.child("sync").child(newId).child("id").setValue(FirebaseInstanceId.getInstance().getToken());
                 fDataBase.child("sync").child(newId).child("type").setValue("android");
-
               //  fDataBase.child("sync").push().
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://stormy-wildwood-31519.herokuapp.com/auth/facebook?id="+newId));
                 startActivity(browserIntent);
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        CheckandSaveUserID();
+
+                        fDataBase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(null);
+
+                    }
+                }, 7000);
+
+
                 Log.i("messenger", "syncing");
                 return true;
 
@@ -662,7 +836,6 @@ public class MainActivity extends AppCompatActivity implements ReminderAdapter.R
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
 

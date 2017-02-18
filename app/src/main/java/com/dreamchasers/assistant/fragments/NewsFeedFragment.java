@@ -2,10 +2,11 @@ package com.dreamchasers.assistant.fragments;
 
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,16 +16,23 @@ import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
 import com.dreamchasers.assistant.R;
-import com.dreamchasers.assistant.adapters.AlbumAdapter;
+import com.dreamchasers.assistant.activities.Reminders;
 import com.dreamchasers.assistant.models.Album;
 import com.dreamchasers.assistant.models.MainView;
+import com.dreamchasers.assistant.viewholders.RemindersHolder;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
+import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -36,20 +44,24 @@ public class NewsFeedFragment extends Fragment {
 
     private int argsType;
     private String mVoiceInput = "";
-    private AlbumAdapter adapter;
     private List<Album> albumList;
+    public final String DEFAULTUSERID = "N/A";
 
-
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+    private FirebaseRecyclerAdapter mAdapter;
     private StaggeredGridLayoutManager mLayoutManager;
     private TextView tvNoMovies;
     ScaleAnimation shrinkAnim;
 
     //Getting reference to Firebase Database
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabaseReference = database.getReference();
-    private static final String userId = "dUDWCUkPXAI:APA91bF8TlQlEZdXLVQMJQktY6J2" +
-            "bcOPZRHvbMr41Jx3Lz1hQxo6KNeRPBEGtoarY5DiMCH2C8XAy2fdcVrO5XXbbOu_XtY1KqM" +
-            "WiRhowm6UKF_4v5v83e4RsGmg_fnEcR8p38q-s1uJ";
+    private DatabaseReference remindersRef = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
+
+
+    public static NewsFeedFragment newInstance() {
+        return new NewsFeedFragment();
+    }
+
 
 
     @Override
@@ -62,14 +74,54 @@ public class NewsFeedFragment extends Fragment {
         super.onViewCreated(view, bundle);
         ButterKnife.bind(this, view);
 
-        initCollapsingToolbar();
+
+
+        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("userKey", MODE_PRIVATE);
+        String usrKey2 = sharedPreferences.getString("userKey", DEFAULTUSERID);
 
 
 
 
+        if(usrKey2.equals(DEFAULTUSERID)){
+            remindersRef = FirebaseDatabase.getInstance().getReference()
+                    .child("server/saving-data/sidekicks/users")
+                    .child(FirebaseInstanceId.getInstance().getToken())
+                    .child("reminders");
 
 
-        argsType = this.getArguments().getInt("TYPE");
+
+        } else {
+
+            remindersRef = FirebaseDatabase.getInstance().getReference()
+                    .child("server/saving-data/sidekicks/users")
+                    .child(usrKey2)
+                    .child("reminders");
+
+
+
+        }
+
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+
+        mAdapter = new FirebaseRecyclerAdapter<Reminders, RemindersHolder>(Reminders.class, R.layout.reminders_card, RemindersHolder.class, remindersRef) {
+            @Override
+            public void populateViewHolder(RemindersHolder remindersViewHolder, Reminders remindersData, int position) {
+                remindersViewHolder.setmReminderDatetime(remindersData.getDatetime());
+                remindersViewHolder.setmReminderText(remindersData.getReminder_text());
+
+            }
+        };
+        mRecyclerView.addItemDecoration(new MaterialViewPagerHeaderDecorator());
+        mRecyclerView.setAdapter(mAdapter);
+        MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView);
+
+
+       // mRecyclerView.setVisibility(View.VISIBLE);
+
+
+/*        argsType = this.getArguments().getInt("TYPE");
         if (argsType == MainView.HOME) {
 
         //    imageView.setImageResource(R.drawable.ic_notifications_black_empty);
@@ -79,55 +131,11 @@ public class NewsFeedFragment extends Fragment {
           //  linearLayout.setVisibility(View.GONE);
            // relativeLayout.setVisibility(View.VISIBLE);
 
-        }
+        }*/
 
 
     }
 
-
-
-
-
-
-
-
-
-
-    /**
-     * Initializing collapsing toolbar
-     * Will show and hide the toolbar title on scroll
-     */
-    private void initCollapsingToolbar() {
-        final CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) getView().findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle(" ");
-        AppBarLayout appBarLayout = (AppBarLayout) getView().findViewById(R.id.appbar);
-        appBarLayout.setExpanded(true);
-
-        // hiding & showing the title when toolbar expanded & collapsed
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
-
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.getTotalScrollRange();
-                }
-                if (scrollRange + verticalOffset == 0) {
-                    collapsingToolbar.setTitle(getString(R.string.app_name));
-                    appBarLayout.setVisibility(View.INVISIBLE);
-                    isShow = true;
-                }
-                else if (isShow) {
-                    collapsingToolbar.setTitle(" ");
-                    appBarLayout.setVisibility(View.VISIBLE);
-
-                    isShow = false;
-                }
-            }
-        });
-    }
 
 
 
