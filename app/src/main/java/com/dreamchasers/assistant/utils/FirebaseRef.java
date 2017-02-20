@@ -1,5 +1,6 @@
 package com.dreamchasers.assistant.utils;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 /**
@@ -7,12 +8,12 @@ import com.google.firebase.database.FirebaseDatabase;
  */
 
 public class FirebaseRef {
-    public static FirebaseDatabase mDatabase;
+    public static DatabaseReference mDatabase;
 
-    public static FirebaseDatabase getDatabase() {
+    public static DatabaseReference getDatabase() {
         if (mDatabase == null) {
-            mDatabase = FirebaseDatabase.getInstance();
-            mDatabase.setPersistenceEnabled(true);
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            mDatabase = FirebaseDatabase.getInstance().getReference();
 
         }
         return mDatabase;

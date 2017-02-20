@@ -19,6 +19,7 @@ import com.dreamchasers.assistant.R;
 import com.dreamchasers.assistant.activities.Reminders;
 import com.dreamchasers.assistant.models.Album;
 import com.dreamchasers.assistant.models.MainView;
+import com.dreamchasers.assistant.utils.FirebaseRef;
 import com.dreamchasers.assistant.viewholders.RemindersHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
@@ -33,6 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.dreamchasers.assistant.utils.FirebaseRef.getDatabase;
 
 
 /**
@@ -54,8 +56,11 @@ public class NewsFeedFragment extends Fragment {
     private TextView tvNoMovies;
     ScaleAnimation shrinkAnim;
 
+
+
     //Getting reference to Firebase Database
-    private DatabaseReference remindersRef = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
+    private DatabaseReference remindersRef = FirebaseRef.getDatabase()
+            .child("server/saving-data/sidekicks/users");
 
 
     public static NewsFeedFragment newInstance() {
@@ -83,21 +88,15 @@ public class NewsFeedFragment extends Fragment {
 
 
         if(usrKey2.equals(DEFAULTUSERID)){
-            remindersRef = FirebaseDatabase.getInstance().getReference()
-                    .child("server/saving-data/sidekicks/users")
-                    .child(FirebaseInstanceId.getInstance().getToken())
+            remindersRef = remindersRef.child(FirebaseInstanceId.getInstance().getToken())
                     .child("reminders");
 
 
 
         } else {
 
-            remindersRef = FirebaseDatabase.getInstance().getReference()
-                    .child("server/saving-data/sidekicks/users")
-                    .child(usrKey2)
+            remindersRef = remindersRef.child(usrKey2)
                     .child("reminders");
-
-
 
         }
 

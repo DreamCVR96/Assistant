@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="help">Help</string>
+    <string name="get_premium">Get premium</string>
+    <string name="user_name">Personalize your profile</string>
+    <string name="sync_google_calendar">Sync with google calendar</string>
+
+
+
+
     <string name="userKeyId" translatable="false"></string>
     <string name="voice_input" translatable="false"></string>
     <string name="about">About</string>

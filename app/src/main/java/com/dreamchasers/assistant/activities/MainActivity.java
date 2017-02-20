@@ -1,5 +1,6 @@
 package com.dreamchasers.assistant.activities;
 
+import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
@@ -13,13 +14,17 @@ import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,9 +62,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -72,6 +80,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.R.attr.id;
+import static com.dreamchasers.assistant.R.id.userNameTextView;
 import static com.dreamchasers.assistant.utils.FirebaseRef.mDatabase;
 
 
@@ -79,17 +89,25 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     public static final String RECEIVE_JSON = "com.dreamchasers.assistant";
    // @BindView(R.id.tabs) PagerSlidingTabStrip pagerSlidingTabStrip;
-   // @BindView(R.id.toolbar) Toolbar toolbar;
+  //  @BindView(R.id.toolbar) Toolbar toolbar;
     private Toolbar toolbar;
     @BindView(R.id.fab_button) FloatingActionButton floatingActionButton;
+
+
+
     @BindView(R.id.fab_button1) FloatingActionButton floatingActionButton1;
+    @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToogle;
     @BindView(R.id.view_textview) EditText vTextView;
     @BindView(R.id.return_textView) TextView rTextView;
+    @Nullable TextView userNameText;
+    @BindView(R.id.navigation_view) NavigationView navigationView;
     //@BindView(R.id.viewpager) ViewPager viewPager;
     @BindView(R.id.materialViewPager) MaterialViewPager mViewPager;
     private FirebaseRecyclerAdapter mAdapter;
 
-    private DatabaseReference fDataBase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
+
+   // private DatabaseReference fDataBase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
 
     private boolean fabIsHidden = false;
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -207,32 +225,54 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         // speech.setRecognitionListener(this);
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         speech.setRecognitionListener(this);
-        setSupportActionBar(toolbar);
+
+        mToogle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+
+        mDrawerLayout.addDrawerListener(mToogle);
+        mToogle.syncState();
 
 
 
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(null);
-        }
 
         toolbar = mViewPager.getToolbar();
-        setTitle("");
+
+
+
+
+
+
+        if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setDisplayShowHomeEnabled(true);
+                actionBar.setDisplayShowTitleEnabled(true);
+                actionBar.setDisplayUseLogoEnabled(false);
+                actionBar.setHomeButtonEnabled(true);
+            }
+
+
+/*//        setTitle("");
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-       //  toolbar.setNavigationIcon(R.drawable);
+           // toolbar.setNavigationIcon(R.drawable.ic_navigation_white_24dp);
 
             ActionBar actionBar = getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowHomeEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayUseLogoEnabled(false);
-            actionBar.setHomeButtonEnabled(true);
+
 
         }
+*/
+
+ /*       if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(null);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        }
+*/
 
         promptSpeechInput();
-
 
 
 
@@ -400,24 +440,55 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
-// Check if we have user id, if not saves it into sharedpreferences.
+
+    // Check if we have user id, if not saves it into sharedpreferences.
     public void CheckandSaveUserID(){
 
 
 
-   /*     SharedPreferences sharedPreferences = getSharedPreferences("userKey", MODE_PRIVATE);
 
 
-        String usrKey = sharedPreferences.getString("userKey", DEFAULTUSERID);
 
 
-        Log.v("PLOVYKLA", "@@@@@@   " + usrKey);
 
-            if(usrKey.equals(DEFAULTUSERID)){
-            Toast.makeText(this, "changing", Toast.LENGTH_LONG).show();*/
+        SharedPreferences sharedPreferences = getSharedPreferences("userKey", MODE_PRIVATE);
+        String usrKey2 = sharedPreferences.getString("userKey", DEFAULTUSERID);
+
+
+
+
+        if(usrKey2.equals(DEFAULTUSERID)){
+        }
+        else {
+            Log.v("PETRAS", "asaasa" );
+            FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users").child(usrKey2).child("first_name").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String userName = dataSnapshot.getValue(String.class);
+                    Log.v("PETRAS", "asaasa" + userName );
+
+                    if(userName != null){
+                        userNameText = (TextView) findViewById(userNameTextView);
+                        userNameText.setText(userName);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
+
+
+
 
             try {
-                FirebaseRef.getDatabase().getReference().child("server/saving-data/sidekicks/users")
+
+                FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users")
                         .orderByChild("android_id")
                         .equalTo(FirebaseInstanceId.getInstance().getToken())
                         .limitToFirst(1)
@@ -446,19 +517,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             } catch(Exception e){}
 
 
-
-                    Log.v("PLOVYKLA", " RIP");
-
-
-
-
-
-/*
-        } else {
-            Toast.makeText(this, "BOY YOU MADE IT", Toast.LENGTH_LONG).show();
-         Log.v("SharedPrefenrences", "Something is wrong, check it out, dreamchaser");
-
-        }*/
 
 
 
@@ -794,12 +852,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.navigation_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent preferenceIntent = new Intent(this, PreferenceActivity.class);
@@ -809,10 +868,10 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 Intent aboutIntent = new Intent(this, AboutActivity.class);
                 startActivity(aboutIntent);
                 return true;
-            case R.id.sync:
-                String newId = fDataBase.child("sync").push().getKey();
-                fDataBase.child("sync").child(newId).child("id").setValue(FirebaseInstanceId.getInstance().getToken());
-                fDataBase.child("sync").child(newId).child("type").setValue("android");
+            case R.id.sync1:
+                String newId = FirebaseRef.getDatabase().child("sync").push().getKey();
+                FirebaseRef.getDatabase().child("sync").child(newId).child("id").setValue(FirebaseInstanceId.getInstance().getToken());
+                FirebaseRef.getDatabase().child("sync").child(newId).child("type").setValue("android");
               //  fDataBase.child("sync").push().
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://stormy-wildwood-31519.herokuapp.com/auth/facebook?id="+newId));
                 startActivity(browserIntent);
@@ -823,7 +882,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     public void run() {
                         CheckandSaveUserID();
 
-                        fDataBase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(null);
+                        FirebaseRef.getDatabase().child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(null);
 
                     }
                 }, 7000);
@@ -834,6 +893,12 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
         }
+
+
+        if(mToogle.onOptionsItemSelected(item)){
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
