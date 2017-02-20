@@ -340,22 +340,50 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             public HeaderDesign getHeaderDesign(int page) {
                 switch (page) {
                     case 0:
+
+                        floatingActionButton1.show();
+                        floatingActionButton.hide();
+                        vTextView.setVisibility(View.VISIBLE);
+                        rTextView.setVisibility(View.VISIBLE);
+
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.blue,
                                 "http://wallpapercave.com/wp/aZlqiAT.png");
+
+
+
+
                     case 1:
+
+                        floatingActionButton1.hide();
+                        floatingActionButton.show();
+                        vTextView.setVisibility(View.INVISIBLE);
+                        rTextView.setVisibility(View.INVISIBLE);
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.green,
                                 "http://www.kunggu.com/resize/resize-img.php?src=http://www.kunggu.com/images/Rendering/clouds-moon-night-star2603.jpg&h=600&w=1024");
                     case 2:
+
+
+                        floatingActionButton.show();
+                        floatingActionButton1.hide();
+                        vTextView.setVisibility(View.INVISIBLE);
+                        rTextView.setVisibility(View.INVISIBLE);
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.cyan,
                                 "https://s-media-cache-ak0.pinimg.com/originals/4e/a7/fb/4ea7fb833c63a4ea0b0fb696c5919dd7.png");
                     case 3:
+
+                        floatingActionButton.show();
+                        floatingActionButton1.hide();
+                        vTextView.setVisibility(View.INVISIBLE);
+                        rTextView.setVisibility(View.INVISIBLE);
+
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.red,
                                 "http://more-sky.com/data/out/4/IMG_40740.png");
                 }
+
 
                 //execute others actions if needed (ex : modify you headder logo ? :/
 
@@ -444,11 +472,35 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     // Check if we have user id, if not saves it into sharedpreferences.
     public void CheckandSaveUserID(){
 
+            try {
+
+                FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users")
+                        .orderByChild("android_id")
+                        .equalTo(FirebaseInstanceId.getInstance().getToken())
+                        .limitToFirst(1)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                    String userKey = childSnapshot.getKey();
+                                    userKeyId = userKey;
+                                    SharedPreferences sharedPreferences1 = getSharedPreferences("userKey", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences1.edit();
+                                    editor.putString("userKey", userKeyId);
+                                    editor.commit();
+
+                                }
 
 
+                            }
 
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.v("PLOVYKLA", "CANCEELL " );
 
-
+                            }
+                        });
+            } catch(Exception e){}
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("userKey", MODE_PRIVATE);
@@ -481,42 +533,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             });
 
         }
-
-
-
-
-
-            try {
-
-                FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users")
-                        .orderByChild("android_id")
-                        .equalTo(FirebaseInstanceId.getInstance().getToken())
-                        .limitToFirst(1)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                    String userKey = childSnapshot.getKey();
-                                    userKeyId = userKey;
-                                    SharedPreferences sharedPreferences1 = getSharedPreferences("userKey", MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences1.edit();
-                                    editor.putString("userKey", userKeyId);
-                                    editor.commit();
-
-                                }
-
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Log.v("PLOVYKLA", "CANCEELL " );
-
-                            }
-                        });
-            } catch(Exception e){}
-
-
 
 
 
