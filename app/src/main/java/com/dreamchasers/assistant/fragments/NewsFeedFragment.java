@@ -88,10 +88,12 @@ public class NewsFeedFragment extends Fragment {
 
 
         if(usrKey2.equals(DEFAULTUSERID)){
-            remindersRef = remindersRef.child(FirebaseInstanceId.getInstance().getToken())
-                    .child("reminders");
 
+            if(!FirebaseInstanceId.getInstance().getToken().equals(null)) {
+                remindersRef = remindersRef.child(FirebaseInstanceId.getInstance().getToken())
+                        .child("reminders");
 
+            }
 
         } else {
 

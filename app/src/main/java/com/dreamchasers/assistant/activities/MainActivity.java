@@ -869,9 +869,9 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 startActivity(aboutIntent);
                 return true;
             case R.id.sync1:
-                String newId = FirebaseRef.getDatabase().child("sync").push().getKey();
-                FirebaseRef.getDatabase().child("sync").child(newId).child("id").setValue(FirebaseInstanceId.getInstance().getToken());
-                FirebaseRef.getDatabase().child("sync").child(newId).child("type").setValue("android");
+                String newId = FirebaseRef.getDatabase().child("server/saving-data/sidekicks").child("sync").push().getKey();
+                FirebaseRef.getDatabase().child("server/saving-data/sidekicks").child("sync").child(newId).child("id").setValue(FirebaseInstanceId.getInstance().getToken());
+                FirebaseRef.getDatabase().child("server/saving-data/sidekicks").child("sync").child(newId).child("type").setValue("android");
               //  fDataBase.child("sync").push().
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://stormy-wildwood-31519.herokuapp.com/auth/facebook?id="+newId));
                 startActivity(browserIntent);
@@ -882,7 +882,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     public void run() {
                         CheckandSaveUserID();
 
-                        FirebaseRef.getDatabase().child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(null);
+                        FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users").child(FirebaseInstanceId.getInstance().getToken()).setValue(null);
 
                     }
                 }, 7000);
