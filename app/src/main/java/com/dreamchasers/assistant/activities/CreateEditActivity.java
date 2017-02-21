@@ -456,7 +456,10 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
 
        HashMap <String, String> reminderMap = new HashMap<>();
         reminderMap.put("reminder_text",titleEditText.getText().toString());
-        reminderMap.put("datetime",DateAndTimeUtil.toStringDateAndTime(calendar));
+        Date dd = new Date(calendar.getTimeInMillis());
+        SimpleDateFormat formatRem = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String newStr = formatRem.format(dd);
+        reminderMap.put("datetime",newStr);
 
         mDatabase.push().setValue(reminderMap);
 
