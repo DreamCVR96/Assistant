@@ -1,32 +1,21 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:design="http://schemas.android.com/tools"
-
-android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/recycler_view1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbarStyle="outsideOverlay"
-        android:clipToPadding="false"
-        android:paddingTop="4dp"
-        android:paddingBottom="@dimen/fab_recycler_view_padding"
-        android:paddingLeft="@dimen/list_padding"
-        android:paddingRight="@dimen/list_padding"
-        android:drawSelectorOnTop="true"
-        android:animationCache="false"
-        android:scrollingCache="false"
-        android:divider="@android:color/transparent"/>
+        android:layout_height="match_parent" />
 
 
     <LinearLayout
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
+        android:gravity="bottom|center"
         android:visibility="gone"
         android:orientation="vertical">
 
@@ -43,7 +32,7 @@ android:layout_width="match_parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="17sp"
-            android:paddingBottom="50dp"
+            android:paddingBottom="120dp"
             android:textColor="@color/emptyColour"
             android:text="@string/no_active" />
 
@@ -53,4 +42,5 @@ android:layout_width="match_parent"
 
 
 
-</LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -94,7 +94,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
     private String icon;
     private String colour;
     public final String DEFAULTUSERID1 = "N/A";
-
+    private CalendarActivity calendarActivity;
     private Calendar calendar;
     private Calendar calendar1;
     private boolean[] daysOfWeek = new boolean[7];
@@ -448,6 +448,10 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         calendar.set(Calendar.SECOND, 0);
         AlarmUtil.setAlarm(this, alarmIntent, reminder.getId(), calendar);
         finish();
+
+        String location = " ";
+
+
 
 
        HashMap <String, String> reminderMap = new HashMap<>();

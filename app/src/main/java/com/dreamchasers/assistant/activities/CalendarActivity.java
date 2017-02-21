@@ -59,6 +59,9 @@ public class CalendarActivity extends Activity
 
     ProgressDialog mProgress;
     private String summary;
+    private String location;
+    private DateTime startDateTime;
+    private DateTime endDatetime;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -141,7 +144,7 @@ public class CalendarActivity extends Activity
                 .setBackOff(new ExponentialBackOff());
     }
 
-    private void insertEvent() {
+    public void insertEvent() {
         if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (mCredential.getSelectedAccountName() == null) {
@@ -149,7 +152,9 @@ public class CalendarActivity extends Activity
         } else if (! isDeviceOnline()) {
             mOutputText.setText("No network connection available.");
         } else {
-            String summary = "Buy jet";
+
+            String summary = " get life";
+
 
             new MakeRequestTask(mCredential, summary).execute();
     }}
@@ -364,12 +369,12 @@ public class CalendarActivity extends Activity
         private Exception mLastError = null;
         private String summary;
 
-        MakeRequestTask(GoogleAccountCredential credential, String summary) {
+        MakeRequestTask(GoogleAccountCredential credential, String s) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.calendar.Calendar.Builder(
                     transport, jsonFactory, credential)
-                    .setApplicationName("Google Calendar API Android Quickstart")
+                    .setApplicationName("Sidekick/assistant")
                     .build();
         }
 
@@ -393,8 +398,9 @@ public class CalendarActivity extends Activity
          * @return List of Strings describing returned events.
          * @throws IOException
          */
-        private  List<String> getDataFromApi(String Summary) throws IOException {
+        private  List<String> getDataFromApi(String Summary ) throws IOException {
             summary = Summary;
+
             // Refer to the Java quickstart on how to setup the environment:
 // https://developers.google.com/google-apps/calendar/quickstart/java
 // Change the scope to CalendarScopes.CALENDAR and delete any stored

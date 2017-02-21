@@ -25,6 +25,8 @@ import com.dreamchasers.assistant.database.DatabaseHelper;
 import com.dreamchasers.assistant.models.Reminder;
 import com.dreamchasers.assistant.R;
 import com.dreamchasers.assistant.adapters.ReminderAdapter;
+import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
+import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ import butterknife.ButterKnife;
 
 public class TabFragment extends Fragment {
 
-    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.recycler_view1) RecyclerView recyclerView;
 
     @BindView(R.id.empty_text) TextView emptyText;
     @BindView(R.id.empty_view) LinearLayout linearLayout;
@@ -43,6 +45,11 @@ public class TabFragment extends Fragment {
     private ReminderAdapter reminderAdapter;
     private List<Reminder> reminderList;
     private int argsType;
+
+
+    public static TabFragment newInstance() {
+        return new TabFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,33 +62,43 @@ public class TabFragment extends Fragment {
         ButterKnife.bind(this, view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
 
-        recyclerView.setLayoutManager(layoutManager);
 
 
-        argsType = this.getArguments().getInt("TYPE");
-        if (argsType == Reminder.INACTIVE) {
-            emptyText.setText(R.string.no_inactive);
-            imageView.setImageResource(R.drawable.ic_notifications_off_black_empty);
-            Log.v("FRAGMENT GET ITEM", "FUCK");
+
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+
+
+        recyclerView.addItemDecoration(new MaterialViewPagerHeaderDecorator());
+
+
+        //  argsType = this.getArguments().getInt("TYPE");
+       // if (argsType == Reminder.INACTIVE) {
+       //     emptyText.setText(R.string.no_inactive);
+        //    imageView.setImageResource(R.drawable.ic_notifications_off_black_empty);
+         //   Log.v("FRAGMENT GET ITEM", "FUCK");
 //
 
-        }
+      // }
 
 
-        argsType = this.getArguments().getInt("TYPE");
-        if (argsType == Reminder.ACTIVE) {
+      //  argsType = this.getArguments().getInt("TYPE");
+       // if (argsType == Reminder.ACTIVE) {
             emptyText.setText(R.string.no_active);
             imageView.setImageResource(R.drawable.ic_notifications_black_empty);
             Log.v("FRAGMENT GET ITEM", "wasssssuuup");
 
 
-        }
+//        }
 
 
 
         reminderList = getListData();
         reminderAdapter = new ReminderAdapter(getContext(), reminderList);
         recyclerView.setAdapter(reminderAdapter);
+        recyclerView.setAdapter(reminderAdapter);
+        MaterialViewPagerHelper.registerRecyclerView(getActivity(), recyclerView);
 
 
         if (reminderAdapter.getItemCount() == 0) {

@@ -38,7 +38,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebViewFragment;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +48,10 @@ import android.widget.Toast;
 import com.astuetz.PagerSlidingTabStrip;
 import com.dreamchasers.assistant.R;
 import com.dreamchasers.assistant.adapters.ReminderAdapter;
+import com.dreamchasers.assistant.fragments.CalendarFragment;
 import com.dreamchasers.assistant.fragments.NewsFeedFragment;
+import com.dreamchasers.assistant.fragments.TabFragment;
+import com.dreamchasers.assistant.models.Reminder;
 import com.dreamchasers.assistant.utils.FirebaseRef;
 import com.dreamchasers.assistant.viewholders.RemindersHolder;
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -81,6 +86,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.R.attr.id;
+import static com.dreamchasers.assistant.R.id.empty_icon;
 import static com.dreamchasers.assistant.R.id.userNameTextView;
 import static com.dreamchasers.assistant.utils.FirebaseRef.mDatabase;
 
@@ -92,9 +98,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
   //  @BindView(R.id.toolbar) Toolbar toolbar;
     private Toolbar toolbar;
     @BindView(R.id.fab_button) FloatingActionButton floatingActionButton;
-
-
-
     @BindView(R.id.fab_button1) FloatingActionButton floatingActionButton1;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToogle;
@@ -272,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         }
 */
 
-        promptSpeechInput();
+      //  promptSpeechInput();
 
 
 
@@ -282,13 +285,17 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
             @Override
             public Fragment getItem(int position) {
+                Bundle bundle = new Bundle();
+
                 switch (position % 4) {
                     //case 0:
                     //    return RecyclerViewFragment.newInstance();
-                    //case 1:
-                    //    return RecyclerViewFragment.newInstance();
-                    //case 2:
-                    //    return WebViewFragment.newInstance();
+                    case 1:
+                        bundle.putInt("TYPE", Reminder.ACTIVE);
+                        TabFragment.newInstance().setArguments(bundle);
+                        return TabFragment.newInstance();
+                    case 2:
+                        return CalendarFragment.newInstance();
                     default:
                         return NewsFeedFragment.newInstance();
                 }
@@ -340,12 +347,11 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             public HeaderDesign getHeaderDesign(int page) {
                 switch (page) {
                     case 0:
-
+                        tabPosition = 0;
                         floatingActionButton1.show();
                         floatingActionButton.hide();
                         vTextView.setVisibility(View.VISIBLE);
                         rTextView.setVisibility(View.VISIBLE);
-
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.blue,
                                 "http://wallpapercave.com/wp/aZlqiAT.png");
@@ -354,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
                     case 1:
-
+                        tabPosition = 1;
                         floatingActionButton1.hide();
                         floatingActionButton.show();
                         vTextView.setVisibility(View.INVISIBLE);
@@ -364,16 +370,15 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                                 "http://www.kunggu.com/resize/resize-img.php?src=http://www.kunggu.com/images/Rendering/clouds-moon-night-star2603.jpg&h=600&w=1024");
                     case 2:
 
-
+                        tabPosition = 2;
                         floatingActionButton.show();
                         floatingActionButton1.hide();
                         vTextView.setVisibility(View.INVISIBLE);
                         rTextView.setVisibility(View.INVISIBLE);
                         return HeaderDesign.fromColorResAndUrl(
-                                R.color.cyan,
-                                "https://s-media-cache-ak0.pinimg.com/originals/4e/a7/fb/4ea7fb833c63a4ea0b0fb696c5919dd7.png");
+                                R.color.cyan, "http://i-cdn.phonearena.com/images/articles/145581-image/January.jpg");
                     case 3:
-
+                        tabPosition = 3;
                         floatingActionButton.show();
                         floatingActionButton1.hide();
                         vTextView.setVisibility(View.INVISIBLE);

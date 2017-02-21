@@ -110,7 +110,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(((Activity) context), cardView, "cardTransition");
                     ActivityCompat.startActivity(((Activity) context), intent, options.toBundle());
 
-                    ((RecyclerListener) context).hideFab();
+                   // ((RecyclerListener) context).hideFab();
                 } else {
                     context.startActivity(intent);
                 }
