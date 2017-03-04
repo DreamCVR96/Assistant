@@ -1,6 +1,5 @@
 package com.dreamchasers.assistant.activities;
 
-import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
@@ -21,57 +20,42 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.WebViewFragment;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.dreamchasers.assistant.R;
-import com.dreamchasers.assistant.adapters.ReminderAdapter;
 import com.dreamchasers.assistant.fragments.CalendarFragment;
 import com.dreamchasers.assistant.fragments.NewsFeedFragment;
 import com.dreamchasers.assistant.fragments.TabFragment;
 import com.dreamchasers.assistant.models.Reminder;
 import com.dreamchasers.assistant.utils.FirebaseRef;
-import com.dreamchasers.assistant.viewholders.RemindersHolder;
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -85,10 +69,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.R.attr.id;
-import static com.dreamchasers.assistant.R.id.empty_icon;
 import static com.dreamchasers.assistant.R.id.userNameTextView;
-import static com.dreamchasers.assistant.utils.FirebaseRef.mDatabase;
 
 
 public class MainActivity extends AppCompatActivity implements RecognitionListener {
@@ -97,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
    // @BindView(R.id.tabs) PagerSlidingTabStrip pagerSlidingTabStrip;
   //  @BindView(R.id.toolbar) Toolbar toolbar;
     private Toolbar toolbar;
+    @BindView(R.id.calButton) Button calButton;
     @BindView(R.id.fab_button) FloatingActionButton floatingActionButton;
     @BindView(R.id.fab_button1) FloatingActionButton floatingActionButton1;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
@@ -237,6 +219,16 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
+        calButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, CalendarActivity.class);
+              //  myIntent.putExtra("key", value); //Optional parameters
+                startActivity(myIntent);
+            }
+        });
+
+
         toolbar = mViewPager.getToolbar();
 
 
@@ -274,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
         }
 */
+        CheckandSaveUserID();
 
       //  promptSpeechInput();
 
@@ -283,19 +276,22 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
         mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
+
+
             @Override
             public Fragment getItem(int position) {
                 Bundle bundle = new Bundle();
 
-                switch (position % 4) {
+                switch (position % 5) {
                     //case 0:
                     //    return RecyclerViewFragment.newInstance();
                     case 1:
+                        return CalendarFragment.newInstance();
+
+                    case 2:
                         bundle.putInt("TYPE", Reminder.ACTIVE);
                         TabFragment.newInstance().setArguments(bundle);
                         return TabFragment.newInstance();
-                    case 2:
-                        return CalendarFragment.newInstance();
                     default:
                         return NewsFeedFragment.newInstance();
                 }
@@ -303,24 +299,33 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
             @Override
             public int getCount() {
-                return 4;
+                return 5;
             }
 
             @Override
             public CharSequence getPageTitle(int position) {
-                switch (position % 4) {
+                switch (position % 5) {
                     case 0:
                         return "Main feed";
                     case 1:
-                        return "Reminders";
-                    case 2:
                         return "Agenda";
+                    case 2:
+                        return "Reminders";
                     case 3:
                         return "Habits";
+                    case 4:
+                        return "TODO";
                 }
                 return "";
             }
         });
+
+
+
+
+
+
+
 
 
 
@@ -466,16 +471,26 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
-        CheckandSaveUserID();
 
     } // onCreate finishes here@@@@2
 
 
 
 
-
     // Check if we have user id, if not saves it into sharedpreferences.
     public void CheckandSaveUserID(){
+        Log.v("usr", "LLOOOL "  + FirebaseInstanceId.getInstance().getToken());
+
+
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences("userKey", MODE_PRIVATE);
+        String usrKey2 = sharedPreferences.getString("userKey", DEFAULTUSERID);
+
+
+
+
+        if(usrKey2.equals(DEFAULTUSERID)){
 
             try {
 
@@ -483,16 +498,18 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                         .orderByChild("android_id")
                         .equalTo(FirebaseInstanceId.getInstance().getToken())
                         .limitToFirst(1)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                        .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                                     String userKey = childSnapshot.getKey();
                                     userKeyId = userKey;
+                                    Log.v("usr", "CANCEELL " + userKeyId );
+
                                     SharedPreferences sharedPreferences1 = getSharedPreferences("userKey", MODE_PRIVATE);
                                     SharedPreferences.Editor editor = sharedPreferences1.edit();
                                     editor.putString("userKey", userKeyId);
-                                    editor.commit();
+                                    editor.apply();
 
                                 }
 
@@ -507,14 +524,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                         });
             } catch(Exception e){}
 
-
-        SharedPreferences sharedPreferences = getSharedPreferences("userKey", MODE_PRIVATE);
-        String usrKey2 = sharedPreferences.getString("userKey", DEFAULTUSERID);
-
-
-
-
-        if(usrKey2.equals(DEFAULTUSERID)){
         }
         else {
             Log.v("PETRAS", "asaasa" );
@@ -901,14 +910,10 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        CheckandSaveUserID();
-
                         FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users").child(FirebaseInstanceId.getInstance().getToken()).setValue(null);
-
+                        CheckandSaveUserID();
                     }
-                }, 7000);
-
-
+                }, 3000);
                 Log.i("messenger", "syncing");
                 return true;
 
@@ -1071,7 +1076,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
         });
     }
-///
+
+
 
 
 }

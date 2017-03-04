@@ -217,6 +217,10 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         String usrKey1 = sharedPreferences1.getString("userKey", DEFAULTUSERID1);
 
 
+
+
+
+        Log.v("usr", "  "  + usrKey1);
         if(usrKey1.equals(DEFAULTUSERID1)){
 
             Toast.makeText(this, "Cant you?", Toast.LENGTH_LONG).show();

@@ -44,6 +44,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,13 +56,7 @@ public class CalendarActivity extends Activity
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
-    private Button mInsertButton;
-
     ProgressDialog mProgress;
-    private String summary;
-    private String location;
-    private DateTime startDateTime;
-    private DateTime endDatetime;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -70,7 +65,7 @@ public class CalendarActivity extends Activity
 
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { CalendarScopes.CALENDAR };
+    private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
 
     /**
      * Create the main activity.
@@ -104,26 +99,6 @@ public class CalendarActivity extends Activity
         });
         activityLayout.addView(mCallApiButton);
 
-
-
-
-        //@@@@@@@@@@@
-        mInsertButton = new Button(this);
-        mInsertButton.setText(BUTTON_TEXT);
-        mInsertButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mInsertButton.setEnabled(false);
-                mOutputText.setText("");
-                insertEvent();
-                mInsertButton.setEnabled(true);
-            }
-        });
-        activityLayout.addView(mInsertButton);
-
-
-
-
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
@@ -144,23 +119,6 @@ public class CalendarActivity extends Activity
                 .setBackOff(new ExponentialBackOff());
     }
 
-    public void insertEvent() {
-        if (! isGooglePlayServicesAvailable()) {
-            acquireGooglePlayServices();
-        } else if (mCredential.getSelectedAccountName() == null) {
-            chooseAccount();
-        } else if (! isDeviceOnline()) {
-            mOutputText.setText("No network connection available.");
-        } else {
-
-            String summary = " get life";
-
-
-            new MakeRequestTask(mCredential, summary).execute();
-    }}
-
-
-
 
 
     /**
@@ -178,7 +136,7 @@ public class CalendarActivity extends Activity
         } else if (! isDeviceOnline()) {
             mOutputText.setText("No network connection available.");
         } else {
-            new MakeRequestTask(mCredential, summary).execute();
+            new MakeRequestTask(mCredential).execute();
         }
     }
 
@@ -235,7 +193,8 @@ public class CalendarActivity extends Activity
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
                     mOutputText.setText(
-                            R.string.Apprequires + R.string.GPSandrelaunch);
+                            "This app requires Google Play Services. Please install " +
+                                    "Google Play Services on your device and relaunch this app.");
                 } else {
                     getResultsFromApi();
                 }
@@ -367,14 +326,13 @@ public class CalendarActivity extends Activity
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.calendar.Calendar mService = null;
         private Exception mLastError = null;
-        private String summary;
 
-        MakeRequestTask(GoogleAccountCredential credential, String s) {
+        MakeRequestTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.calendar.Calendar.Builder(
                     transport, jsonFactory, credential)
-                    .setApplicationName("Sidekick/assistant")
+                    .setApplicationName("Google Calendar API Android Quickstart")
                     .build();
         }
 
@@ -385,7 +343,7 @@ public class CalendarActivity extends Activity
         @Override
         protected List<String> doInBackground(Void... params) {
             try {
-                return getDataFromApi(summary);
+                return getDataFromApi();
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -398,54 +356,29 @@ public class CalendarActivity extends Activity
          * @return List of Strings describing returned events.
          * @throws IOException
          */
-        private  List<String> getDataFromApi(String Summary ) throws IOException {
-            summary = Summary;
+        private List<String> getDataFromApi() throws IOException {
+            // List the next 10 events from the primary calendar.
+            DateTime now = new DateTime(System.currentTimeMillis());
+            List<String> eventStrings = new ArrayList<String>();
+            Events events = mService.events().list("primary")
+                    .setMaxResults(10)
+                    .setTimeMin(now)
+                    .setOrderBy("startTime")
+                    .setSingleEvents(true)
+                    .execute();
+            List<Event> items = events.getItems();
 
-            // Refer to the Java quickstart on how to setup the environment:
-// https://developers.google.com/google-apps/calendar/quickstart/java
-// Change the scope to CalendarScopes.CALENDAR and delete any stored
-// credentials.
-
-            Event event = new Event()
-                    .setSummary(summary)
-                    .setLocation("Klaipeda, Arnas hood")
-                    .setDescription("A chance to get cancer.");
-
-            DateTime startDateTime = new DateTime("2017-01-27T10:00:00-07:35");
-            EventDateTime start = new EventDateTime()
-                    .setDateTime(startDateTime)
-                    .setTimeZone("UTC+02:00");
-            event.setStart(start);
-
-            DateTime endDateTime = new DateTime("2017-01-27T10:00:00-07:36");
-            EventDateTime end = new EventDateTime()
-                    .setDateTime(endDateTime)
-                    .setTimeZone("UTC+02:00");
-            event.setEnd(end);
-
-//            String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
-  //          event.setRecurrence(Arrays.asList(recurrence));
-
-            EventAttendee[] attendees = new EventAttendee[] {
-                    new EventAttendee().setEmail("lpage@example.com"),
-                    new EventAttendee().setEmail("sbrin@example.com"),
-            };
-            event.setAttendees(Arrays.asList(attendees));
-
-            EventReminder[] reminderOverrides = new EventReminder[] {
-                    new EventReminder().setMethod("email").setMinutes(10),
-                    new EventReminder().setMethod("popup").setMinutes(10),
-            };
-            Event.Reminders reminders = new Event.Reminders()
-                    .setUseDefault(false)
-                    .setOverrides(Arrays.asList(reminderOverrides));
-            event.setReminders(reminders);
-
-            String calendarId = "primary";
-            event = mService.events().insert(calendarId, event).execute();
-            System.out.printf("Event created: %s\n", event.getHtmlLink());
-
-             return null;
+            for (Event event : items) {
+                DateTime start = event.getStart().getDateTime();
+                if (start == null) {
+                    // All-day events don't have start times, so just use
+                    // the start date.
+                    start = event.getStart().getDate();
+                }
+                eventStrings.add(
+                        String.format("%s (%s)", event.getSummary(), start));
+            }
+            return eventStrings;
         }
 
 
