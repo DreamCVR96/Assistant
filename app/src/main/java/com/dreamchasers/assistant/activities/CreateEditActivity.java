@@ -147,13 +147,15 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
 
 
             //dateText.setText(DateAndTimeUtil.toStringReadableDate(calendar));
+
             SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formattedDate = dayFormat.format((convertedDate));
-
 
            String diena = (String) DateFormat.format("dd", convertedDate);
            String menuo = (String) DateFormat.format("MM", convertedDate);
            String metai = (String) DateFormat.format("yyyy", convertedDate);
+
+            menuo = String.valueOf((Integer.parseInt(menuo) - 1));
 
             dateText.setText(formattedDate);
 
@@ -162,6 +164,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
 
             Log.v("yearTest", String.valueOf(convertedDate.getDay()));
             calendar.set(Calendar.YEAR, Integer.parseInt(metai));
+
             calendar.set(Calendar.MONTH, Integer.parseInt(menuo));
             calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(diena));
 
@@ -463,6 +466,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         SimpleDateFormat formatRem = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         String newStr = formatRem.format(dd);
         reminderMap.put("datetime",newStr);
+        reminderMap.put("by_android","1");
 
         mDatabase.push().setValue(reminderMap);
 

@@ -17,17 +17,17 @@ public class Reminder {
     public static final int ADVANCED = 7;
 
     private int id;
-    private String title;
-    private String content;
-    private String dateAndTime;
-    private int repeatType;
-    private String foreverState;
-    private int numberToShow;
-    private int numberShown;
+    private String title = "e";
+    private String content ="E";
+    private String dateAndTime = "e";
+    private int repeatType = 0;
+    private String foreverState = "asd";
+    private int numberToShow = 0;
+    private int numberShown = 0;
     private String icon;
-    private String colour;
-    private boolean[] daysOfWeek;
-    private int interval;
+    private String colour = "#8e8e8e";
+    private boolean[] daysOfWeek = new boolean[]{false};
+    private int interval=0;
 
     public int getId() {
         return id;

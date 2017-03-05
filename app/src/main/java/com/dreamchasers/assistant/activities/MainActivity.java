@@ -25,6 +25,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -46,6 +47,7 @@ import com.dreamchasers.assistant.models.Reminder;
 import com.dreamchasers.assistant.receivers.AlarmReceiver;
 import com.dreamchasers.assistant.utils.AlarmUtil;
 import com.dreamchasers.assistant.utils.DateAndTimeUtil;
+import com.dreamchasers.assistant.utils.DateHelper;
 import com.dreamchasers.assistant.utils.FirebaseRef;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.github.florent37.materialviewpager.MaterialViewPager;
@@ -61,8 +63,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -510,80 +514,43 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
 
-                String reminderText = "";
-
-                String datetime = "";
-                JSONObject jsonObj = null;
-                JSONArray obj = null;
+                if(!dataSnapshot.child("by_android").exists()) {
 
 
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Log.e("Kebab", "======="+postSnapshot.child("datetime").getValue());
-                    Log.e("Kebab", "======="+postSnapshot.child("reminder_text").getValue());
+                    String reminderId = dataSnapshot.getKey();
+                    if (dataSnapshot.child("reminder_text").exists())
+                        Log.e("deivui", (String) dataSnapshot.child("reminder_text").getValue());
+
+                    String reminder = String.valueOf(dataSnapshot.getValue());
+
+
+                    if (dataSnapshot.child("reminder_text").exists()) {
+                        DatabaseHelper database = DatabaseHelper.getInstance(getBaseContext());
+                        int id1 = database.getLastNotificationId() + 1;
+                        String dummyIcon = getString(R.string.default_icon_value);
+                        Reminder reminderNew = new Reminder()
+                                .setId(id1)
+                                .setTitle(String.valueOf(dataSnapshot.child("reminder_text").getValue()))
+                                .setIcon(dummyIcon);
+                        database.addNotification(reminderNew);
+
+                        database.close();
+                        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+                        Date setDate = new DateHelper().string2Date(String.valueOf(dataSnapshot.child("datetime").getValue()));
+
+                        Calendar calendarDummy = (Calendar) Calendar.getInstance().clone();
+
+                        if (setDate == null) {
+                            Log.v("asd", "asdasdsadas");
+                        } else {
+                            Log.v("ciacia", setDate.toString());
+                            calendarDummy.setTime(setDate);
+                            // AlarmUtil.setAlarm(getBaseContext(), alarmIntent, reminderNew.getId(), calendarDummy);
+                            AlarmUtil.setAlarm(getApplicationContext(), alarmIntent, reminderNew.getId(), calendarDummy);
+                        }
+                    }
                 }
 
-
-                String reminderId = dataSnapshot.getKey();
-
-
-                String reminder  = String.valueOf(dataSnapshot.getValue());
-
-
-                Log.v("Kebab", " reminders  " + reminder);
-
-                // jsonObj = new JSONObject(String.valueOf(dataSnapshot.getValue());
-         /*       try {
-                //    jsonObj = new JSONObject(reminder);
-                 //    obj = new JSONArray(reminder);
-                    jsonObj = new JSONObject(String.valueOf(dataSnapshot.getValue()));
-                    datetime = (String) jsonObj.get("datetime");
-                    reminderText = (String) jsonObj.get("reminder_text");
-                    Log.v("Kebab", " JSON " + jsonObj.toString() + obj.toString());
-                    Log.v("Kebab", " datetime " + datetime);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-*/
-          //      Log.v("Kebab", " JSON " + jsonObj.toString() + obj.toString());
-
-
-               // String datetime = String.valueOf(dataSnapshot.getValue());
-
-
-               // Log.v("Kebab", " reminderText  " + reminderText);
-
-
-
-
-/*
-                if(reminderText != null){
-                    DatabaseHelper database = DatabaseHelper.getInstance(getBaseContext());
-                    int id1 = database.getLastNotificationId() + 1;
-                    Reminder reminderNew = new Reminder()
-                            .setId(id1)
-                            .setTitle(reminderText);
-                    database.addNotification(reminderNew);
-
-
-
-                    database.close();
-                    //Intent alarmIntent = new Intent(getBaseContext(), AlarmReceiver.class);
-
-                  //  calendar1.set(Calendar.SECOND, 0);
-                   // AlarmUtil.setAlarm(getBaseContext(), alarmIntent, reminder.getId(), calendar1);
-
-                }*/
-
-
-
-      /*          if (repeatType == Reminder.SPECIFIC_DAYS) {
-                    reminder.setDaysOfWeek(daysOfWeek);
-                    database.addDaysOfWeek(reminder);
-                }*/
-
-
-          //      Log.v("Kebab", " Reminder text is " + reminderText);
 
 
             }

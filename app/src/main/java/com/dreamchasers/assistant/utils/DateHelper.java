@@ -18,6 +18,7 @@ public class DateHelper {
         Date date = null;
         try {
             date = format.parse(strDate);
+
             System.out.println(date);
         } catch (ParseException e) {
             // TODO Auto-generated catch block
