@@ -96,7 +96,6 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
     public final String DEFAULTUSERID1 = "N/A";
     private CalendarActivity calendarActivity;
     private Calendar calendar;
-    private Calendar calendar1;
     private boolean[] daysOfWeek = new boolean[7];
     private int timesShown = 0;
     private int timesToShow = 1;

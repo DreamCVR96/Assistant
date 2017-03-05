@@ -38,24 +38,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dreamchasers.assistant.R;
+import com.dreamchasers.assistant.database.DatabaseHelper;
 import com.dreamchasers.assistant.fragments.CalendarFragment;
 import com.dreamchasers.assistant.fragments.NewsFeedFragment;
 import com.dreamchasers.assistant.fragments.TabFragment;
 import com.dreamchasers.assistant.models.Reminder;
+import com.dreamchasers.assistant.receivers.AlarmReceiver;
+import com.dreamchasers.assistant.utils.AlarmUtil;
+import com.dreamchasers.assistant.utils.DateAndTimeUtil;
 import com.dreamchasers.assistant.utils.FirebaseRef;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -69,6 +76,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.R.attr.data;
+import static android.R.attr.id;
+import static com.dreamchasers.assistant.R.id.reminderText;
 import static com.dreamchasers.assistant.R.id.userNameTextView;
 
 
@@ -101,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private String mainServerUrl = "https://stormy-wildwood-31519.herokuapp.com/android";
     private String sendTextString;
     public final String DEFAULTUSERID = "N/A";
+    private Calendar calendar1;
+
 
     public static String userKeyId;
     public Intent recognizerIntent;
@@ -490,9 +502,119 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
+
+        FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users")
+                .child(usrKey2).child("reminders")
+                .addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+
+                String reminderText = "";
+
+                String datetime = "";
+                JSONObject jsonObj = null;
+                JSONArray obj = null;
+
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Log.e("Kebab", "======="+postSnapshot.child("datetime").getValue());
+                    Log.e("Kebab", "======="+postSnapshot.child("reminder_text").getValue());
+                }
+
+
+                String reminderId = dataSnapshot.getKey();
+
+
+                String reminder  = String.valueOf(dataSnapshot.getValue());
+
+
+                Log.v("Kebab", " reminders  " + reminder);
+
+                // jsonObj = new JSONObject(String.valueOf(dataSnapshot.getValue());
+         /*       try {
+                //    jsonObj = new JSONObject(reminder);
+                 //    obj = new JSONArray(reminder);
+                    jsonObj = new JSONObject(String.valueOf(dataSnapshot.getValue()));
+                    datetime = (String) jsonObj.get("datetime");
+                    reminderText = (String) jsonObj.get("reminder_text");
+                    Log.v("Kebab", " JSON " + jsonObj.toString() + obj.toString());
+                    Log.v("Kebab", " datetime " + datetime);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+*/
+          //      Log.v("Kebab", " JSON " + jsonObj.toString() + obj.toString());
+
+
+               // String datetime = String.valueOf(dataSnapshot.getValue());
+
+
+               // Log.v("Kebab", " reminderText  " + reminderText);
+
+
+
+
+/*
+                if(reminderText != null){
+                    DatabaseHelper database = DatabaseHelper.getInstance(getBaseContext());
+                    int id1 = database.getLastNotificationId() + 1;
+                    Reminder reminderNew = new Reminder()
+                            .setId(id1)
+                            .setTitle(reminderText);
+                    database.addNotification(reminderNew);
+
+
+
+                    database.close();
+                    //Intent alarmIntent = new Intent(getBaseContext(), AlarmReceiver.class);
+
+                  //  calendar1.set(Calendar.SECOND, 0);
+                   // AlarmUtil.setAlarm(getBaseContext(), alarmIntent, reminder.getId(), calendar1);
+
+                }*/
+
+
+
+      /*          if (repeatType == Reminder.SPECIFIC_DAYS) {
+                    reminder.setDaysOfWeek(daysOfWeek);
+                    database.addDaysOfWeek(reminder);
+                }*/
+
+
+          //      Log.v("Kebab", " Reminder text is " + reminderText);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.v("Kebab", " why");
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.v("Kebab", " why");
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.v("Kebab", " why");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.v("Kebab", " why");
+            }
+        });
+
         if(usrKey2.equals(DEFAULTUSERID)){
 
             try {
+
+
 
                 FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users")
                         .orderByChild("android_id")
@@ -534,7 +656,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     String userName = dataSnapshot.getValue(String.class);
                     Log.v("PETRAS", "asaasa" + userName );
 
-                    if(userName != null){
+                    if(userName != null && userNameText != null){
                         userNameText = (TextView) findViewById(userNameTextView);
                         userNameText.setText(userName);
                     }
@@ -557,6 +679,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     protected void onDestroy() {
         bManager.unregisterReceiver(bReceiver);
         super.onDestroy();
+
     }
 
     @OnClick(R.id.fab_button)
