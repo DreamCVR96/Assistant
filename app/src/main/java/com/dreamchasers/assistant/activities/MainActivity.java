@@ -118,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private Calendar calendar1;
 
 
+
+
+
+
     public static String userKeyId;
     public Intent recognizerIntent;
     private String LOG_TAG = "VoiceRecognition";
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public static final String TAG = MainActivity.class.getSimpleName();
     private final OkHttpClient client = new OkHttpClient();
 
-    
+
 
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
