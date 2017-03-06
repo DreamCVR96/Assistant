@@ -125,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public static final String TAG = MainActivity.class.getSimpleName();
     private final OkHttpClient client = new OkHttpClient();
 
+    
+
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
