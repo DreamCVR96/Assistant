@@ -82,6 +82,8 @@ public class NewsFeedFragment extends Fragment {
 
         if (usrKey2.equals(DEFAULTUSERID)) {
 
+
+
             if (!FirebaseInstanceId.getInstance().getToken().equals(null)) {
                 remindersRef = remindersRef.child(FirebaseInstanceId.getInstance().getToken())
                         .child("reminders");
@@ -103,6 +105,9 @@ public class NewsFeedFragment extends Fragment {
             public void populateViewHolder(RemindersHolder remindersViewHolder, Reminders remindersData, int position) {
                 remindersViewHolder.setmReminderDatetime(remindersData.getDatetime());
                 remindersViewHolder.setmReminderText(remindersData.getReminder_text());
+
+
+
 
             }
         };
@@ -128,6 +133,7 @@ public class NewsFeedFragment extends Fragment {
 
 
     }
+
 
 
 }

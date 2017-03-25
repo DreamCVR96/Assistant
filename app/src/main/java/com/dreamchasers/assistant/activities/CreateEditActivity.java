@@ -118,7 +118,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
 
         calendar = Calendar.getInstance();
         icon = getString(R.string.default_icon_value);
-        colour = getString(R.string.default_colour_value);
+        colour = getString(R.string.default_reminder_colour_value);
         repeatType = Reminder.DOES_NOT_REPEAT;
         id = getIntent().getIntExtra("NOTIFICATION_ID", 0);
 
@@ -135,7 +135,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
         if(getIntent().hasExtra("date")) {
             date = (String) getIntent().getExtras().get("date");
             Log.v("data gauta: ", date);
-            convertedDate = new DateHelper().string2Date(date);
+
             Log.v("display", convertedDate.toString());
 
 
@@ -147,6 +147,7 @@ public class CreateEditActivity extends AppCompatActivity implements ColorChoose
 
 
             //dateText.setText(DateAndTimeUtil.toStringReadableDate(calendar));
+            convertedDate = new DateHelper().string2Date(date);
 
             SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formattedDate = dayFormat.format((convertedDate));

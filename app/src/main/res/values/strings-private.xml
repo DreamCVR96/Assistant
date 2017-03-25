@@ -8,7 +8,7 @@
     <string name="one" translatable="false">1</string>
 
 
-    <string name="default_colour_value" translatable="false">#8e8e8e</string>
+    <string name="default_reminder_colour_value" translatable="false">#0084ff</string>
 
     <string name="default_icon_value" translatable="false">ic_notifications_white_24dp</string>
 

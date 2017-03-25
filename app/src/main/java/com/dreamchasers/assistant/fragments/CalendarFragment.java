@@ -76,7 +76,7 @@ public class CalendarFragment extends Fragment implements CalendarPickerControll
         maxDate.add(Calendar.YEAR, 1);
 
         List<CalendarEvent> eventList = new ArrayList<>();
-        mockList(eventList);
+   /*     mockList(eventList);
 
           //  mAgendaCalendarView.setNestedScrollingEnabled(true);
         try {
@@ -90,7 +90,7 @@ public class CalendarFragment extends Fragment implements CalendarPickerControll
       //  MaterialViewPagerHelper.registerScrollView(getActivity(), mScrollView);
 
 
-        MaterialViewPagerHelper.registerScrollView(getActivity(), mScrollView);
+        MaterialViewPagerHelper.registerScrollView(getActivity(), mScrollView);*/
     }
 
 

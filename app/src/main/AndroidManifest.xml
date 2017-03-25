@@ -36,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.CreateEditActivity"
             android:configChanges="orientation|screenSize"
@@ -99,6 +100,19 @@
             </intent-filter>
         </service>
 
+
+        <service
+            android:name=".activities.OnChildAdded" >
+            <intent-filter>
+                <action android:name="com.dreamchasers.assistant.activities.OnChildAdded" />
+            </intent-filter>
+        </service>
+        <receiver android:name=".utils.StartFirebaseAtBoot" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

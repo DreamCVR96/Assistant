@@ -18,14 +18,14 @@ public class Reminder {
 
     private int id;
     private String title = "e";
-    private String content ="E";
+    private String content;
     private String dateAndTime = "e";
     private int repeatType = 0;
     private String foreverState = "asd";
     private int numberToShow = 0;
     private int numberShown = 0;
     private String icon;
-    private String colour = "#8e8e8e";
+    private String colour = "#0084ff";
     private boolean[] daysOfWeek = new boolean[]{false};
     private int interval=0;
 

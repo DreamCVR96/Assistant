@@ -14,7 +14,6 @@ public class FirebaseRef {
         if (mDatabase == null) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             mDatabase = FirebaseDatabase.getInstance().getReference();
-
         }
         return mDatabase;
     }

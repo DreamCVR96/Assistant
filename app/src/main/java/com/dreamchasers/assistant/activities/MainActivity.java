@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -304,13 +305,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             public Fragment getItem(int position) {
                 Bundle bundle = new Bundle();
 
-                switch (position % 5) {
-                    //case 0:
-                    //    return RecyclerViewFragment.newInstance();
+                switch (position % 6) {
+                    case 0:
+                        return NewsFeedFragment.newInstance();
                     case 1:
                         return CalendarFragment.newInstance();
 
-                    case 2:
+                    case 5:
                         bundle.putInt("TYPE", Reminder.ACTIVE);
                         TabFragment.newInstance().setArguments(bundle);
                         return TabFragment.newInstance();
@@ -321,22 +322,24 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
             @Override
             public int getCount() {
-                return 5;
+                return 6;
             }
 
             @Override
             public CharSequence getPageTitle(int position) {
-                switch (position % 5) {
+                switch (position % 6) {
                     case 0:
                         return "Main feed";
                     case 1:
                         return "Agenda";
                     case 2:
-                        return "Reminders";
-                    case 3:
-                        return "Habits";
-                    case 4:
                         return "TODO";
+                    case 3:
+                        return "Alarms";
+                    case 4:
+                        return "Habits";
+                    case 5:
+                        return "Reminders";
                 }
                 return "";
             }
@@ -394,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                         rTextView.setVisibility(View.INVISIBLE);
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.green,
-                                "http://www.kunggu.com/resize/resize-img.php?src=http://www.kunggu.com/images/Rendering/clouds-moon-night-star2603.jpg&h=600&w=1024");
+                                "https://s-media-cache-ak0.pinimg.com/736x/55/95/f1/5595f141efe9586536afd72a1553b2d7.jpg");
                     case 2:
 
                         tabPosition = 2;
@@ -492,9 +495,12 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
+        startService(new Intent(this, OnChildAdded.class));
 
 
-    } // onCreate finishes here@@@@2
+
+
+    } // ONCREATE FINISHES HERE!@!@!@!@!!@!@
 
 
 
@@ -504,90 +510,12 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         Log.v("usr", "LLOOOL "  + FirebaseInstanceId.getInstance().getToken());
 
 
-
-
         SharedPreferences sharedPreferences = getSharedPreferences("userKey", MODE_PRIVATE);
         String usrKey2 = sharedPreferences.getString("userKey", DEFAULTUSERID);
-
-
-
-
-
-        FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users")
-                .child(usrKey2).child("reminders")
-                .addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-
-                if(!dataSnapshot.child("by_android").exists()) {
-
-
-                    String reminderId = dataSnapshot.getKey();
-                    if (dataSnapshot.child("reminder_text").exists())
-                        Log.e("deivui", (String) dataSnapshot.child("reminder_text").getValue());
-
-                    String reminder = String.valueOf(dataSnapshot.getValue());
-
-
-                    if (dataSnapshot.child("reminder_text").exists()) {
-                        DatabaseHelper database = DatabaseHelper.getInstance(getBaseContext());
-                        int id1 = database.getLastNotificationId() + 1;
-                        String dummyIcon = getString(R.string.default_icon_value);
-                        Reminder reminderNew = new Reminder()
-                                .setId(id1)
-                                .setTitle(String.valueOf(dataSnapshot.child("reminder_text").getValue()))
-                                .setIcon(dummyIcon);
-                        database.addNotification(reminderNew);
-
-                        database.close();
-                        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
-                        Date setDate = new DateHelper().string2Date(String.valueOf(dataSnapshot.child("datetime").getValue()));
-
-                        Calendar calendarDummy = (Calendar) Calendar.getInstance().clone();
-
-                        if (setDate == null) {
-                            Log.v("asd", "asdasdsadas");
-                        } else {
-                            Log.v("ciacia", setDate.toString());
-                            calendarDummy.setTime(setDate);
-                            // AlarmUtil.setAlarm(getBaseContext(), alarmIntent, reminderNew.getId(), calendarDummy);
-                            AlarmUtil.setAlarm(getApplicationContext(), alarmIntent, reminderNew.getId(), calendarDummy);
-                        }
-                    }
-                }
-
-
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.v("Kebab", " why");
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.v("Kebab", " why");
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                Log.v("Kebab", " why");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.v("Kebab", " why");
-            }
-        });
 
         if(usrKey2.equals(DEFAULTUSERID)){
 
             try {
-
-
 
                 FirebaseRef.getDatabase().child("server/saving-data/sidekicks/users")
                         .orderByChild("android_id")
@@ -607,7 +535,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                                     editor.apply();
 
                                 }
-
 
                             }
 
