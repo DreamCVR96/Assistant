@@ -1,1 +1,6 @@
-include ':app'
+include ':app', ':Etar', ':external:calendar', ':external:chips', ':external:datetimepicker', ':external:colorpicker', ':external:timezonepicker'
+project(':external:calendar').projectDir = new File('Etar/external/calendar')
+project(':external:chips').projectDir = new File('Etar/external/chips')
+project(':external:datetimepicker').projectDir = new File('Etar/external/datetimepicker')
+project(':external:colorpicker').projectDir = new File('Etar/external/colorpicker')
+project(':external:timezonepicker').projectDir = new File('Etar/external/timezonepicker')

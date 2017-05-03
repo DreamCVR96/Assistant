@@ -14,20 +14,22 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.Nullable;
+import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.app.Fragment;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateFormat;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,41 +40,34 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.calendar.AllInOneActivity;
+import com.android.calendar.CalendarController;
+import com.android.calendar.agenda.AgendaFragment;
+
 import com.dreamchasers.assistant.R;
-import com.dreamchasers.assistant.database.DatabaseHelper;
-import com.dreamchasers.assistant.fragments.CalendarFragment;
 import com.dreamchasers.assistant.fragments.NewsFeedFragment;
-import com.dreamchasers.assistant.fragments.TabFragment;
-import com.dreamchasers.assistant.models.Reminder;
-import com.dreamchasers.assistant.receivers.AlarmReceiver;
-import com.dreamchasers.assistant.utils.AlarmUtil;
-import com.dreamchasers.assistant.utils.DateAndTimeUtil;
-import com.dreamchasers.assistant.utils.DateHelper;
 import com.dreamchasers.assistant.utils.FirebaseRef;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -81,9 +76,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.R.attr.data;
-import static android.R.attr.id;
-import static com.dreamchasers.assistant.R.id.reminderText;
 import static com.dreamchasers.assistant.R.id.userNameTextView;
 
 
@@ -105,9 +97,11 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     //@BindView(R.id.viewpager) ViewPager viewPager;
     @BindView(R.id.materialViewPager) MaterialViewPager mViewPager;
     private FirebaseRecyclerAdapter mAdapter;
+    private CalendarController mController;
+    private TextView mHeaderView;
 
 
-   // private DatabaseReference fDataBase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
+    // private DatabaseReference fDataBase = FirebaseDatabase.getInstance().getReference().child("server/saving-data/sidekicks/");
 
     private boolean fabIsHidden = false;
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -236,6 +230,15 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
         mToogle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
 
+
+
+
+
+        LayoutInflater inflater = (LayoutInflater) this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mHeaderView = (TextView)inflater.inflate(R.layout.agenda_header_footer, null);
+
+
         mDrawerLayout.addDrawerListener(mToogle);
         mToogle.syncState();
 
@@ -245,16 +248,17 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         calButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, CalendarActivity.class);
-              //  myIntent.putExtra("key", value); //Optional parameters
+                Intent myIntent = new Intent(MainActivity.this, AllInOneActivity.class);
+                //  myIntent.putExtra("key", value); //Optional parametpackage com.dreamchasers.assistant.activities;
                 startActivity(myIntent);
-            }
-        });
+
+            }});
 
 
         toolbar = mViewPager.getToolbar();
 
 
+        mController = CalendarController.getInstance(this);
 
 
 
@@ -297,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
-        mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+        mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
 
 
 
@@ -309,14 +313,23 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     case 0:
                         return NewsFeedFragment.newInstance();
                     case 1:
-                        return CalendarFragment.newInstance();
+                        return AgendaFragment.newInstance();
+//                    case 4:
+//                        return AlarmClockFragment.newInstance();
 
-                    case 5:
-                        bundle.putInt("TYPE", Reminder.ACTIVE);
-                        TabFragment.newInstance().setArguments(bundle);
-                        return TabFragment.newInstance();
+                  //  new AgendaFragment(timeMillis, false);
+
+
+
+                        //mController.sendEvent(this, CalendarController.EventType.GO_TO, null, null, -1, CalendarController.ViewType.AGENDA);
+//                    case 5:
+//                        bundle.putInt("TYPE", Reminder.ACTIVE);
+//                        TabFragment.newInstance().setArguments(bundle);
+//                        return TabFragment.newInstance();
                     default:
                         return NewsFeedFragment.newInstance();
+                        //return AgendaFragment.newInstance();
+                        //return NewsFeedFragment.newInstance();
                 }
             }
 
@@ -348,6 +361,43 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
+        FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_speed_dial);
+        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                // TODO: Do something with yout menu items, or return false if you don't want to show them
+                return true;
+            }
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                //TODO: Start some activity
+
+                int id = menuItem.getItemId();
+
+
+
+                switch(id){
+                    case R.id.action_event:
+                        CreateCalendarEvent();
+                        break;
+                    case R.id.action_reminder:
+                        Intent caIntent = new Intent(MainActivity.this, CreateEditActivity.class);
+                        startActivity(caIntent);
+                        break;
+
+                    default:
+                        Log.v("AA", "None of these menu items were selected");
+                        break;
+
+
+                }
+
+
+                return super.onMenuItemSelected(menuItem);
+            }
+
+
+        });
 
 
 
@@ -397,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                         rTextView.setVisibility(View.INVISIBLE);
                         return HeaderDesign.fromColorResAndUrl(
                                 R.color.green,
-                                "https://s-media-cache-ak0.pinimg.com/736x/55/95/f1/5595f141efe9586536afd72a1553b2d7.jpg");
+                                "https://alistapart.com/d/438/fig-6--background-blend-mode.jpg");
                     case 2:
 
                         tabPosition = 2;
@@ -504,7 +554,24 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
 
+public void CreateCalendarEvent(){
 
+    //Create new Event
+    Time t = new Time();
+    t.set(mController.getTime());
+    t.second = 0;
+    if (t.minute > 30) {
+        t.hour++;
+        t.minute = 0;
+    } else if (t.minute > 0 && t.minute < 30) {
+        t.minute = 30;
+    }
+    mController.sendEventRelatedEvent(
+            this, CalendarController.EventType.CREATE_EVENT, -1, t.toMillis(true), 0, 0, 0, -1);
+
+
+
+}
     // Check if we have user id, if not saves it into sharedpreferences.
     public void CheckandSaveUserID(){
         Log.v("usr", "LLOOOL "  + FirebaseInstanceId.getInstance().getToken());
@@ -584,8 +651,18 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     @OnClick(R.id.fab_button)
     public void fabClicked() {
-        Intent intent = new Intent(this, CreateEditActivity.class);
-        startActivity(intent);
+        //Create new Event
+        Time t = new Time();
+        t.set(mController.getTime());
+        t.second = 0;
+        if (t.minute > 30) {
+            t.hour++;
+            t.minute = 0;
+        } else if (t.minute > 0 && t.minute < 30) {
+            t.minute = 30;
+        }
+        mController.sendEventRelatedEvent(
+                this, CalendarController.EventType.CREATE_EVENT, -1, t.toMillis(true), 0, 0, 0, -1);
 
 
     }
@@ -594,6 +671,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     @OnClick(R.id.fab_button1)
     public void mainFabClicked() {
         promptSpeechInput();
+
+
 
 
 

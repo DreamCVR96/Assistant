@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/action_alarm"
+        android:icon="@drawable/ic_alarm_add_white_24dp"
+        android:title="@string/alarm" />
+
+
+    <item
+        android:id="@+id/action_reminder"
+        android:icon="@drawable/ic_notifications_black_empty"
+        android:title="@string/reminder" />
+
+
+    <item
+        android:id="@+id/action_todo"
+        android:icon="@drawable/ic_done_white_24dp"
+        android:title="@string/todo" />
+    <item
+        android:id="@+id/action_event"
+        android:icon="@drawable/mini_calendar"
+        android:title="@string/event" />
+
+</menu>

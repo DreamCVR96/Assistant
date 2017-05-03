@@ -1,9 +1,9 @@
 package com.dreamchasers.assistant.adapters;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,28 +90,28 @@ public class ViewPageAdapter extends FragmentPagerAdapter implements PagerSlidin
 
             return newsF1;
 
-            case 1:
-                bundle.putInt("TYPE", Reminder.ACTIVE);
-                Fragment tab1 = new TabFragment();
-                tab1.setArguments(bundle);
-                return tab1;
-
-
-
-            case 2:
-
-                bundle.putInt("TYPE", Reminder.INACTIVE);
-                Fragment tab2 = new TabFragment();
-                tab2.setArguments(bundle);
-                return tab2;
-
-            case 3:
-
-                //  bundle.putInt("TYPE", MainView.HOME);
-                Fragment alarmF = new AlarmsFragment();
-                // alarmF.setArguments(bundle);
-
-                return alarmF;
+//            case 1:
+//                bundle.putInt("TYPE", Reminder.ACTIVE);
+//                Fragment tab1 = new TabFragment();
+//                tab1.setArguments(bundle);
+//                return tab1;
+//
+//
+//
+//            case 2:
+//
+//                bundle.putInt("TYPE", Reminder.INACTIVE);
+//                Fragment tab2 = new TabFragment();
+//                tab2.setArguments(bundle);
+//                return tab2;
+//
+//            case 3:
+//
+//                //  bundle.putInt("TYPE", MainView.HOME);
+//                Fragment alarmF = new AlarmsFragment();
+//                // alarmF.setArguments(bundle);
+//
+//                return alarmF;
             default:
                 Log.v("Fragment getItem", "Default, null");
                 return null;

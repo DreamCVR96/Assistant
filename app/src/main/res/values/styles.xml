@@ -12,6 +12,8 @@
         <item name="android:windowTitleBackgroundStyle">@style/CustomWindowTitleBackground</item>
         <item name="android:windowNoTitle">false</item>
         <item name="android:statusBarColor">@color/primary</item>
+        <item name="agenda_general_bgcolor">@color/agenda_general_background_color</item>
+        <item name="agenda_day_item_text_color">@color/agenda_day_item_text_color</item>
 
     </style>
 
@@ -25,8 +27,18 @@
         <item name="android:dividerHeight">@dimen/line_separator_height</item>
         <item name="android:dialogTheme">@style/Dialog</item>
         <item name="actionOverflowButtonStyle">@style/OverFlow</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
 
+
+
+
+
+
+
+
+        <item name="agenda_general_bgcolor">@color/agenda_general_background_color</item>
+        <item name="agenda_day_item_text_color">@color/agenda_day_item_text_color</item>
 
     </style>
 
@@ -57,6 +69,7 @@
         <item name="android:windowContentOverlay">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
+
     </style>
 
     <style name="Toolbar" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -110,7 +123,7 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="AppTheme1" parent="AppBaseTheme">
+    <style name="AppTheme1" parent="Theme.AppCompat.Light.NoActionBar">
 
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
@@ -120,13 +133,18 @@
         <item name="windowActionBar">false</item>
 
         <!-- Material Theme -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/accent_color</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorAccent">@color/accent</item>
+
+
+
 
         <item name="android:statusBarColor" tools:targetApi="21">@color/statusBarColor</item>
         <item name="android:navigationBarColor" tools:targetApi="21">@color/navigationBarColor</item>
         <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="21">true</item>
+        <item name="agenda_general_bgcolor">@color/agenda_general_background_color</item>
+        <item name="agenda_day_item_text_color">@color/primary</item>
 
 
     </style>

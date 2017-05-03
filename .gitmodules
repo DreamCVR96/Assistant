@@ -1,0 +1,3 @@
+[submodule "Etar"]
+	path = Etar
+	url = https://github.com/Etar-Group/Etar-Calendar.git

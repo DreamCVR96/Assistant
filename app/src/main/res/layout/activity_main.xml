@@ -66,7 +66,9 @@
         android:layout_gravity="bottom|bottom"
         android:layout_margin="@dimen/response_output_margin"
         app:backgroundTint="@color/primary"
-        app:useCompatPadding="false" />
+        app:useCompatPadding="false"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"/>
 
 
     <android.support.design.widget.FloatingActionButton
@@ -79,6 +81,30 @@
         android:src="@drawable/fb_m"
         app:backgroundTint="@color/background"
         />
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/fab_speed_dial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            app:fabGravity="bottom_end"
+            app:fabMenu="@menu/fab_menu_main"
+            app:fabBackgroundTint="?attr/colorPrimary"
+            app:miniFabBackgroundTint="@android:color/white"
+            app:miniFabDrawableTint="?attr/colorPrimary"
+            app:miniFabTitleTextColor="?attr/colorPrimary"
+
+
+
+            />
+
+    </FrameLayout>
 
 
     <EditText

@@ -11,6 +11,13 @@
     <string name="sync_google_calendar">Sync with google calendar</string>
 
 
+    <string name="event">Event</string>
+    <string name="reminder">Reminder</string>
+    <string name="alarm">Alarm</string>
+    <string name="habit">Habit</string>
+    <string name="todo">To-do</string>
+
+
 
 
     <string name="userKeyId" translatable="false"></string>
